@@ -32,8 +32,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const mockProfile: Profile = {
     id: 'mock-user-123',
-    name: 'Demo User',
-    email: 'demo@fitness.app',
+    name: 'Avinash Kumar',
+    email: 'avinash.kumar550@gmail.com',
     current_streak: 5,
     longest_streak: 12,
     total_xp: 350,
