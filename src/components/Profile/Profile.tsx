@@ -1,32 +1,72 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Calendar, Target, LogOut, Edit2, Save, X } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { signOut } from '../../lib/auth';
+import { supabase } from '../../lib/supabase';
 
 interface ProfileProps {
   onLogout: () => void;
 }
 
 export default function Profile({ onLogout }: ProfileProps) {
+  const { user, profile, refreshProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: 'Alex Johnson',
-    age: '28',
-    gender: 'male',
-    height: '175',
-    weight: '72',
+    name: '',
+    age: '',
+    gender: '',
+    height: '',
+    weight: '',
   });
 
-  const mockProfile = {
-    name: formData.name,
-    email: 'demo@fitnessapp.com',
-    level: 12,
-    current_streak: 7,
-    longest_streak: 23,
-    total_xp: 3450,
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.name || '',
+        age: profile.age?.toString() || '',
+        gender: profile.gender || '',
+        height: profile.height?.toString() || '',
+        weight: profile.weight?.toString() || '',
+      });
+    }
+  }, [profile]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      onLogout();
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: formData.name,
+          age: formData.age ? parseInt(formData.age) : null,
+          gender: formData.gender || null,
+          height: formData.height ? parseFloat(formData.height) : null,
+          weight: formData.weight ? parseFloat(formData.weight) : null,
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      await refreshProfile();
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,7 +75,7 @@ export default function Profile({ onLogout }: ProfileProps) {
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-white">Profile</h1>
           <button
-            onClick={onLogout}
+            onClick={handleLogout}
             className="flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl text-white hover:bg-white/30 transition-all"
           >
             <LogOut className="w-5 h-5" />
@@ -56,10 +96,10 @@ export default function Profile({ onLogout }: ProfileProps) {
             </div>
 
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-white mb-1">{mockProfile.name}</h2>
+              <h2 className="text-2xl font-bold text-white mb-1">{profile?.name || 'User'}</h2>
               <p className="text-white/70 flex items-center justify-center space-x-2">
                 <Mail className="w-4 h-4" />
-                <span>{mockProfile.email}</span>
+                <span>{user?.email}</span>
               </p>
             </div>
 
@@ -77,7 +117,8 @@ export default function Profile({ onLogout }: ProfileProps) {
                 <div className="flex space-x-2">
                   <button
                     onClick={handleSave}
-                    className="flex items-center space-x-2 bg-green-500 px-3 py-2 rounded-lg text-white hover:bg-green-600 transition-all"
+                    disabled={loading}
+                    className="flex items-center space-x-2 bg-green-500 px-3 py-2 rounded-lg text-white hover:bg-green-600 transition-all disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
                     <span>Save</span>
@@ -171,7 +212,7 @@ export default function Profile({ onLogout }: ProfileProps) {
                     <Target className="w-5 h-5 text-teal-200" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-white">{mockProfile.level}</p>
+                    <p className="text-2xl font-bold text-white">{profile?.level || 1}</p>
                     <p className="text-white/70 text-sm">Level</p>
                   </div>
                 </div>
@@ -183,7 +224,7 @@ export default function Profile({ onLogout }: ProfileProps) {
                     <Calendar className="w-5 h-5 text-green-200" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-white">{mockProfile.current_streak}</p>
+                    <p className="text-2xl font-bold text-white">{profile?.current_streak || 0}</p>
                     <p className="text-white/70 text-sm">Day Streak</p>
                   </div>
                 </div>
@@ -193,11 +234,11 @@ export default function Profile({ onLogout }: ProfileProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-white/70 text-sm mb-1">Total XP</p>
-                    <p className="text-2xl font-bold text-white">{mockProfile.total_xp}</p>
+                    <p className="text-2xl font-bold text-white">{profile?.total_xp || 0}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-white/70 text-sm mb-1">Longest Streak</p>
-                    <p className="text-2xl font-bold text-white">{mockProfile.longest_streak} days</p>
+                    <p className="text-2xl font-bold text-white">{profile?.longest_streak || 0} days</p>
                   </div>
                 </div>
               </div>
