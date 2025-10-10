@@ -48,21 +48,46 @@ export async function signOut() {
 }
 
 export async function getCurrentUser() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  try {
+    console.log('Getting current user...');
+    const {
+      data: { user },
+      error
+    } = await supabase.auth.getUser();
+
+    if (error) {
+      console.error('Error getting user:', error);
+      return null;
+    }
+
+    console.log('User retrieved:', user ? 'yes' : 'no');
+    return user;
+  } catch (error) {
+    console.error('Exception getting user:', error);
+    return null;
+  }
 }
 
 export async function getProfile(userId: string) {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .maybeSingle();
+  try {
+    console.log('Getting profile for user:', userId);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      console.error('Error getting profile:', error);
+      return null;
+    }
+
+    console.log('Profile retrieved:', data ? 'yes' : 'no');
+    return data;
+  } catch (error) {
+    console.error('Exception getting profile:', error);
+    return null;
+  }
 }
 
 async function initializeUserMilestones(userId: string) {
