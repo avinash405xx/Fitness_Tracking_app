@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import DashboardDark from '../Dashboard/DashboardDark';
+import DashboardModern from '../Dashboard/DashboardModern';
 import WorkoutDetail from '../Workout/WorkoutDetail';
 import WorkoutTimer from '../Workout/WorkoutTimer';
 import WorkoutsList from '../Workouts/WorkoutsList';
 import Goals from '../Goals/Goals';
 import Profile from '../Profile/Profile';
+import DrinkingTracker from '../Tracker/DrinkingTracker';
+import SleepTracker from '../Tracker/SleepTracker';
 import BottomNav from '../Navigation/BottomNav';
 
-type Screen = 'dashboard' | 'workout-detail' | 'workout-timer' | 'workouts' | 'goals' | 'profile';
+type Screen = 'dashboard' | 'workout-detail' | 'workout-timer' | 'workouts' | 'goals' | 'profile' | 'drinking-tracker' | 'sleep-tracker' | 'daily-exercise';
 type NavItem = 'home' | 'saved' | 'browse' | 'profile';
 
 interface AppModernProps {
@@ -43,10 +45,29 @@ export default function AppModern({ onLogout }: AppModernProps) {
     }
   };
 
+  const handleNavigate = (page: string) => {
+    const pageMap: { [key: string]: Screen } = {
+      'drinking tracker': 'drinking-tracker',
+      'daily exercise': 'daily-exercise',
+      'sleep tracker': 'sleep-tracker',
+    };
+
+    const screen = pageMap[page.toLowerCase()] || 'dashboard';
+    if (screen === 'daily-exercise') {
+      setCurrentScreen('workout-detail');
+    } else {
+      setCurrentScreen(screen);
+    }
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'dashboard':
-        return <DashboardDark onWorkoutClick={() => setCurrentScreen('workout-detail')} onLogout={onLogout} />;
+        return <DashboardModern onNavigate={handleNavigate} />;
+      case 'drinking-tracker':
+        return <DrinkingTracker onBack={() => setCurrentScreen('dashboard')} />;
+      case 'sleep-tracker':
+        return <SleepTracker onBack={() => setCurrentScreen('dashboard')} />;
       case 'workouts':
         return <WorkoutsList onWorkoutClick={() => setCurrentScreen('workout-detail')} />;
       case 'goals':
@@ -65,11 +86,11 @@ export default function AppModern({ onLogout }: AppModernProps) {
           <WorkoutTimer workout={workout} onBack={() => setCurrentScreen('workout-detail')} />
         );
       default:
-        return <DashboardDark onWorkoutClick={() => setCurrentScreen('workout-detail')} onLogout={onLogout} />;
+        return <DashboardModern onNavigate={handleNavigate} />;
     }
   };
 
-  const showBottomNav = !['workout-detail', 'workout-timer'].includes(currentScreen);
+  const showBottomNav = !['workout-detail', 'workout-timer', 'drinking-tracker', 'sleep-tracker'].includes(currentScreen);
 
   return (
     <div className="relative min-h-screen bg-gray-900">
