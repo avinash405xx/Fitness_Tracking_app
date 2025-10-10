@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { User, Mail, Lock, Chrome, AlertCircle } from 'lucide-react';
-import { signUp } from '../../lib/auth';
+import { User, Mail, Lock, Chrome, AlertCircle, CheckCircle } from 'lucide-react';
+import { signUp, signInWithGoogle } from '../../lib/auth';
 
 interface SignupProps {
   onSwitchToLogin: () => void;
@@ -12,27 +12,50 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
+
+    if (!name || !email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
     setLoading(true);
 
     try {
       await signUp(email, password, name);
-      if (onSignupSuccess) {
-        onSignupSuccess();
-      }
+      setSuccess('Account created successfully! Redirecting...');
+      setTimeout(() => {
+        if (onSignupSuccess) {
+          onSignupSuccess();
+        }
+      }, 1500);
     } catch (err: any) {
-      setError(err.message || 'Failed to create account');
+      console.error('Signup error:', err);
+      setError(err.message || 'Failed to create account. Email may already be in use.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignup = () => {
-    setError('Google sign-up coming soon!');
+  const handleGoogleSignup = async () => {
+    try {
+      setError('');
+      await signInWithGoogle();
+    } catch (err: any) {
+      console.error('Google signup error:', err);
+      setError(err.message || 'Failed to sign up with Google');
+    }
   };
 
   return (
@@ -75,6 +98,13 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
               </div>
             )}
 
+            {success && (
+              <div className="mb-4 bg-green-500/20 border border-green-500/50 rounded-xl p-3 flex items-center space-x-2">
+                <CheckCircle className="w-5 h-5 text-green-200" />
+                <p className="text-green-100 text-sm">{success}</p>
+              </div>
+            )}
+
             <form onSubmit={handleSignup} className="space-y-5">
               <div>
                 <label className="block text-gray-300 text-sm mb-2">Name</label>
@@ -85,6 +115,7 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Full name"
+                    required
                     className="w-full bg-white/20 border border-white/30 rounded-xl px-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white/50 focus:bg-white/25 transition-all"
                   />
                 </div>
@@ -99,13 +130,14 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@example.com"
+                    required
                     className="w-full bg-white/20 border border-white/30 rounded-xl px-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white/50 focus:bg-white/25 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-300 text-sm mb-2">Password</label>
+                <label className="block text-gray-300 text-sm mb-2">Password (min 6 characters)</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -113,6 +145,8 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
+                    required
+                    minLength={6}
                     className="w-full bg-white/20 border border-white/30 rounded-xl px-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white/50 focus:bg-white/25 transition-all"
                   />
                 </div>

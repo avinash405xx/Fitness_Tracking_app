@@ -1,6 +1,14 @@
 import { supabase } from './supabase';
 
 export async function signUp(email: string, password: string, name: string) {
+  if (!email || !password) {
+    throw new Error('Email and password are required');
+  }
+
+  if (password.length < 6) {
+    throw new Error('Password must be at least 6 characters');
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -24,7 +32,9 @@ export async function signUp(email: string, password: string, name: string) {
       level: 1,
     });
 
-    if (profileError) throw profileError;
+    if (profileError && !profileError.message.includes('duplicate')) {
+      console.error('Profile creation error:', profileError);
+    }
 
     await initializeUserMilestones(data.user.id);
   }
@@ -33,9 +43,25 @@ export async function signUp(email: string, password: string, name: string) {
 }
 
 export async function signIn(email: string, password: string) {
+  if (!email || !password) {
+    throw new Error('Email and password are required');
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function signInWithGoogle() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/`,
+    },
   });
 
   if (error) throw error;

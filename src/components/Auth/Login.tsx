@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mail, Lock, Chrome, AlertCircle } from 'lucide-react';
-import { signIn } from '../../lib/auth';
+import { signIn, signInWithGoogle } from '../../lib/auth';
 
 interface LoginProps {
   onSwitchToSignup: () => void;
@@ -16,6 +16,12 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -24,14 +30,21 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
         onLoginSuccess();
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+      console.error('Login error:', err);
+      setError(err.message || 'Failed to sign in. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
-    setError('Google sign-in coming soon!');
+  const handleGoogleLogin = async () => {
+    try {
+      setError('');
+      await signInWithGoogle();
+    } catch (err: any) {
+      console.error('Google login error:', err);
+      setError(err.message || 'Failed to sign in with Google');
+    }
   };
 
   return (
@@ -83,7 +96,8 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email"
+                    placeholder="email@example.com"
+                    required
                     className="w-full bg-white/20 border border-white/30 rounded-xl px-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white/50 focus:bg-white/25 transition-all"
                   />
                 </div>
@@ -98,6 +112,7 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
+                    required
                     className="w-full bg-white/20 border border-white/30 rounded-xl px-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-white/50 focus:bg-white/25 transition-all"
                   />
                 </div>
