@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Mail, Lock, Chrome } from 'lucide-react';
+import { Mail, Lock, Chrome, AlertCircle } from 'lucide-react';
+import { signIn } from '../../lib/auth';
 
 interface LoginProps {
   onSwitchToSignup: () => void;
@@ -9,19 +10,28 @@ interface LoginProps {
 export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onLoginSuccess) {
-      onLoginSuccess();
+    setError('');
+    setLoading(true);
+
+    try {
+      await signIn(email, password);
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    console.log('Google login clicked');
-    if (onLoginSuccess) {
-      onLoginSuccess();
-    }
+    setError('Google sign-in coming soon!');
   };
 
   return (
@@ -53,8 +63,15 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
           <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
             <div className="mb-6">
               <h2 className="text-white text-2xl font-bold mb-1">Welcome Back</h2>
-              <p className="text-gray-300 text-sm">Amanda</p>
+              <p className="text-gray-300 text-sm">Sign in to continue</p>
             </div>
+
+            {error && (
+              <div className="mb-4 bg-red-500/20 border border-red-500/50 rounded-xl p-3 flex items-center space-x-2">
+                <AlertCircle className="w-5 h-5 text-red-200" />
+                <p className="text-red-100 text-sm">{error}</p>
+              </div>
+            )}
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
@@ -93,9 +110,10 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
 
               <button
                 type="submit"
-                className="w-full bg-white text-gray-900 font-semibold py-3 rounded-xl hover:bg-gray-100 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
+                disabled={loading}
+                className="w-full bg-white text-gray-900 font-semibold py-3 rounded-xl hover:bg-gray-100 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Log in
+                {loading ? 'Signing in...' : 'Log in'}
               </button>
 
               <div className="relative my-6">

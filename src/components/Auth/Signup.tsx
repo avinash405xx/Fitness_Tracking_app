@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { User, Mail, Lock, Chrome } from 'lucide-react';
+import { User, Mail, Lock, Chrome, AlertCircle } from 'lucide-react';
+import { signUp } from '../../lib/auth';
 
 interface SignupProps {
   onSwitchToLogin: () => void;
@@ -10,19 +11,28 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSignupSuccess) {
-      onSignupSuccess();
+    setError('');
+    setLoading(true);
+
+    try {
+      await signUp(email, password, name);
+      if (onSignupSuccess) {
+        onSignupSuccess();
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to create account');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleSignup = () => {
-    console.log('Google signup clicked');
-    if (onSignupSuccess) {
-      onSignupSuccess();
-    }
+    setError('Google sign-up coming soon!');
   };
 
   return (
@@ -53,9 +63,16 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
 
           <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
             <div className="mb-6">
-              <h2 className="text-white text-2xl font-bold mb-1">Get in & at 3 Free</h2>
-              <p className="text-gray-300 text-sm">Courses</p>
+              <h2 className="text-white text-2xl font-bold mb-1">Create Account</h2>
+              <p className="text-gray-300 text-sm">Start your fitness journey today</p>
             </div>
+
+            {error && (
+              <div className="mb-4 bg-red-500/20 border border-red-500/50 rounded-xl p-3 flex items-center space-x-2">
+                <AlertCircle className="w-5 h-5 text-red-200" />
+                <p className="text-red-100 text-sm">{error}</p>
+              </div>
+            )}
 
             <form onSubmit={handleSignup} className="space-y-5">
               <div>
@@ -102,9 +119,10 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
 
               <button
                 type="submit"
-                className="w-full bg-white text-gray-900 font-semibold py-3 rounded-xl hover:bg-gray-100 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                disabled={loading}
+                className="w-full bg-white text-gray-900 font-semibold py-3 rounded-xl hover:bg-gray-100 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign up
+                {loading ? 'Creating account...' : 'Sign up'}
               </button>
 
               <div className="relative my-6">
