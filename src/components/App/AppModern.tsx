@@ -46,7 +46,7 @@ export default function AppModern({ onLogout }: AppModernProps) {
   const renderScreen = () => {
     switch (currentScreen) {
       case 'dashboard':
-        return <DashboardDark onWorkoutClick={() => setCurrentScreen('workout-detail')} />;
+        return <DashboardDark onWorkoutClick={() => setCurrentScreen('workout-detail')} onLogout={onLogout} />;
       case 'workouts':
         return <WorkoutsList onWorkoutClick={() => setCurrentScreen('workout-detail')} />;
       case 'goals':
@@ -65,7 +65,7 @@ export default function AppModern({ onLogout }: AppModernProps) {
           <WorkoutTimer workout={workout} onBack={() => setCurrentScreen('workout-detail')} />
         );
       default:
-        return <DashboardDark onWorkoutClick={() => setCurrentScreen('workout-detail')} />;
+        return <DashboardDark onWorkoutClick={() => setCurrentScreen('workout-detail')} onLogout={onLogout} />;
     }
   };
 

@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, Flame, Dumbbell, User } from 'lucide-react';
+import { TrendingUp, Flame, Dumbbell, LogOut } from 'lucide-react';
 import AnimatedCounter from '../shared/AnimatedCounter';
 
 interface DashboardDarkProps {
   onWorkoutClick: () => void;
+  onLogout?: () => void;
 }
 
-export default function DashboardDark({ onWorkoutClick }: DashboardDarkProps) {
+export default function DashboardDark({ onWorkoutClick, onLogout }: DashboardDarkProps) {
   const weeklySteps = [
     { day: 'Mon', steps: 3200 },
     { day: 'Tue', steps: 4100 },
@@ -25,10 +26,12 @@ export default function DashboardDark({ onWorkoutClick }: DashboardDarkProps) {
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-white">Dashboard</h1>
           <motion.button
-            whileTap={{ scale: 0.9 }}
-            className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/30"
+            whileTap={{ scale: 0.95 }}
+            onClick={onLogout}
+            className="flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl text-white hover:bg-white/30 transition-all border border-white/30"
           >
-            <User className="w-6 h-6 text-white" />
+            <LogOut className="w-5 h-5" />
+            <span className="text-sm font-medium">Logout</span>
           </motion.button>
         </div>
 
