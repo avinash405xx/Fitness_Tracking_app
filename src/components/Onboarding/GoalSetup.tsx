@@ -102,26 +102,26 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-teal-900 via-green-900 to-teal-800 flex items-center justify-center px-4 py-12">
       <div className="max-w-4xl w-full">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={step === 1 ? onBack : () => setStep(1)}
-              className="text-gray-600 hover:text-gray-900 flex items-center space-x-2 transition-colors"
+              className="text-white/80 hover:text-white flex items-center space-x-2 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>Back</span>
             </button>
             <div className="flex items-center space-x-2">
-              <div className={`w-2 h-2 rounded-full ${step >= 1 ? 'bg-emerald-600' : 'bg-gray-300'}`} />
-              <div className={`w-2 h-2 rounded-full ${step >= 2 ? 'bg-emerald-600' : 'bg-gray-300'}`} />
+              <div className={`w-2 h-2 rounded-full ${step >= 1 ? 'bg-green-400' : 'bg-white/30'}`} />
+              <div className={`w-2 h-2 rounded-full ${step >= 2 ? 'bg-green-400' : 'bg-white/30'}`} />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-white mb-2">
             {step === 1 ? 'Choose Your First Goal' : 'Customize Your Goal'}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-white/80">
             {step === 1
               ? 'Select a goal template to get started quickly'
               : 'Set your starting point and target'}
@@ -136,7 +136,7 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
                 <button
                   key={template.id}
                   onClick={() => handleTemplateSelect(template)}
-                  className="bg-white rounded-2xl p-6 shadow-sm border-2 border-gray-200 hover:border-emerald-500 hover:shadow-md transition-all text-left group"
+                  className="bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-lg border-2 border-white/20 hover:border-green-400 hover:shadow-xl transition-all text-left group"
                 >
                   <div className="flex items-start space-x-4">
                     <div
@@ -145,10 +145,10 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
                       <Icon className="w-7 h-7 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">{template.name}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{template.description}</p>
+                      <h3 className="text-xl font-bold text-white mb-1">{template.name}</h3>
+                      <p className="text-sm text-white/80 mb-2">{template.description}</p>
                       <div className="flex items-center space-x-2">
-                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full font-medium">
+                        <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full font-medium">
                           {template.category}
                         </span>
                         <span className="text-xs text-emerald-600 font-semibold">
@@ -163,7 +163,7 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
           </div>
         ) : (
           selectedTemplate && (
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-lg border border-white/20">
               <div className="flex items-center space-x-4 mb-6">
                 <div
                   className={`w-16 h-16 bg-gradient-to-br ${selectedTemplate.color} rounded-2xl flex items-center justify-center`}
@@ -174,8 +174,8 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
                   })()}
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">{selectedTemplate.name}</h2>
-                  <p className="text-gray-600">{selectedTemplate.description}</p>
+                  <h2 className="text-2xl font-bold text-white">{selectedTemplate.name}</h2>
+                  <p className="text-white/80">{selectedTemplate.description}</p>
                 </div>
               </div>
 
@@ -187,7 +187,7 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-semibold text-white mb-3">
                     What's your current value?
                   </label>
                   <div className="flex items-center space-x-4">
@@ -200,14 +200,14 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
                       className="flex-1 px-6 py-4 border-2 border-gray-300 rounded-xl text-2xl font-bold focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                       step="0.1"
                     />
-                    <span className="text-gray-600 font-medium min-w-[100px]">
+                    <span className="text-white/80 font-medium min-w-[100px]">
                       {selectedTemplate.unit}
                     </span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label className="block text-sm font-semibold text-white mb-3">
                     What's your target?
                   </label>
                   <div className="flex items-center space-x-4">
@@ -220,15 +220,15 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
                       className="flex-1 px-6 py-4 border-2 border-gray-300 rounded-xl text-2xl font-bold focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                       step="0.1"
                     />
-                    <span className="text-gray-600 font-medium min-w-[100px]">
+                    <span className="text-white/80 font-medium min-w-[100px]">
                       {selectedTemplate.unit}
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-xl p-6">
+                <div className="bg-white/10 rounded-xl p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-gray-600">Progress to goal</span>
+                    <span className="text-white/80">Progress to goal</span>
                     <span className="text-2xl font-bold text-emerald-600">
                       {customValues.target > 0
                         ? Math.min(
@@ -239,7 +239,7 @@ export default function GoalSetup({ onComplete, onBack }: GoalSetupProps) {
                       %
                     </span>
                   </div>
-                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-3 bg-white/20 rounded-full overflow-hidden">
                     <div
                       className={`h-full bg-gradient-to-r ${selectedTemplate.color} rounded-full transition-all`}
                       style={{

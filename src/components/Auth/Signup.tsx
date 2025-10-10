@@ -36,13 +36,14 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-green-600 via-blue-700 to-blue-700">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-green-900 via-teal-800 to-green-800">
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-20"
+        className="absolute inset-0 bg-cover bg-center opacity-40"
         style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg?auto=compress&cs=tinysrgb&w=1920)',
+          backgroundImage: 'url(https://images.pexels.com/photos/4162491/pexels-photo-4162491.jpeg?auto=compress&cs=tinysrgb&w=1920)',
         }}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-green-900/50 via-teal-800/50 to-green-800/50" />
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
@@ -63,8 +64,8 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
 
           <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
             <div className="mb-6">
-              <h2 className="text-white text-2xl font-bold mb-1">Create Account</h2>
-              <p className="text-gray-300 text-sm">Start your fitness journey today</p>
+              <h2 className="text-white text-2xl font-bold mb-1">Get in & at 3 Free</h2>
+              <p className="text-gray-300 text-sm">Courses</p>
             </div>
 
             {error && (

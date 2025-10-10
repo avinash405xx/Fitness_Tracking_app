@@ -17,7 +17,7 @@ export default function BottomNav({ active, onSelect }: BottomNavProps) {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-600 via-blue-700 to-green-700 pb-safe z-50 shadow-2xl">
+    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-teal-900 via-green-900 to-teal-800 pb-safe z-50 shadow-2xl">
       <div className="flex items-center justify-around px-6 py-4">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -37,7 +37,7 @@ export default function BottomNav({ active, onSelect }: BottomNavProps) {
               >
                 <Icon
                   className={`w-6 h-6 transition-colors ${
-                    isActive ? 'text-blue-600' : 'text-white'
+                    isActive ? 'text-teal-600' : 'text-white'
                   }`}
                 />
               </div>

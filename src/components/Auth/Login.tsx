@@ -35,13 +35,14 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-green-700">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-teal-900 via-green-900 to-teal-800">
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-20"
+        className="absolute inset-0 bg-cover bg-center opacity-40"
         style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1920)',
+          backgroundImage: 'url(https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1920)',
         }}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-teal-900/50 via-green-900/50 to-teal-800/50" />
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">

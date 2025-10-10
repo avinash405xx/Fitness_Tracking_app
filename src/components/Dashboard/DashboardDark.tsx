@@ -20,7 +20,7 @@ export default function DashboardDark({ onWorkoutClick }: DashboardDarkProps) {
   const maxSteps = Math.max(...weeklySteps.map((d) => d.steps));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-green-700">
+    <div className="min-h-screen bg-gradient-to-br from-teal-900 via-green-900 to-teal-800">
       <div className="px-6 pt-12 pb-24">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-white">Dashboard</h1>
@@ -39,7 +39,7 @@ export default function DashboardDark({ onWorkoutClick }: DashboardDarkProps) {
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5 text-blue-200" />
+              <TrendingUp className="w-5 h-5 text-teal-200" />
               <span className="text-white/80 text-sm">Steps</span>
             </div>
             <span className="text-white/80 text-sm">This week</span>
@@ -101,8 +101,8 @@ export default function DashboardDark({ onWorkoutClick }: DashboardDarkProps) {
             className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-5"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-400/30 flex items-center justify-center">
-                <Dumbbell className="w-5 h-5 text-blue-200" />
+              <div className="w-10 h-10 rounded-xl bg-teal-400/30 flex items-center justify-center">
+                <Dumbbell className="w-5 h-5 text-teal-200" />
               </div>
               <span className="text-2xl">💪</span>
             </div>
@@ -128,7 +128,7 @@ export default function DashboardDark({ onWorkoutClick }: DashboardDarkProps) {
               onClick={onWorkoutClick}
               className="w-full text-left"
             >
-              <div className="bg-gradient-to-br from-blue-500 to-green-600 rounded-3xl p-4 flex items-center space-x-4 shadow-xl">
+              <div className="bg-gradient-to-br from-teal-600 to-green-700 rounded-3xl p-4 flex items-center space-x-4 shadow-xl">
                 <img
                   src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=200"
                   alt="Challenge"
@@ -162,14 +162,14 @@ export default function DashboardDark({ onWorkoutClick }: DashboardDarkProps) {
               whileTap={{ scale: 0.98 }}
               className="w-full text-left"
             >
-              <div className="bg-gradient-to-br from-green-500 to-blue-600 rounded-3xl p-4 flex items-center space-x-4 shadow-xl">
+              <div className="bg-gradient-to-br from-green-600 to-teal-700 rounded-3xl p-4 flex items-center space-x-4 shadow-xl">
                 <img
                   src="https://images.pexels.com/photos/4162491/pexels-photo-4162491.jpeg?auto=compress&cs=tinysrgb&w=200"
                   alt="Cardio"
                   className="w-20 h-20 rounded-2xl object-cover"
                 />
                 <div className="flex-1">
-                  <span className="text-xs bg-blue-400/30 text-white px-3 py-1 rounded-full">
+                  <span className="text-xs bg-teal-400/30 text-white px-3 py-1 rounded-full">
                     Challenge
                   </span>
                   <h3 className="text-lg font-bold text-white mt-2">Cardio</h3>

@@ -6,7 +6,7 @@ interface WelcomeProps {
 
 export default function Welcome({ onComplete }: WelcomeProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-green-700 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-teal-900 via-green-900 to-teal-800 flex items-center justify-center px-4 py-12">
       <div className="max-w-4xl w-full">
         <div className="text-center text-white mb-12">
           <div className="inline-flex items-center justify-center w-24 h-24 bg-white/20 backdrop-blur-sm rounded-3xl mb-6">
@@ -58,7 +58,7 @@ export default function Welcome({ onComplete }: WelcomeProps) {
           </p>
           <button
             onClick={onComplete}
-            className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-8 py-4 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-xl transition-all shadow-lg transform hover:scale-105 mx-auto"
+            className="bg-gradient-to-r from-teal-600 to-green-600 text-white px-8 py-4 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-xl transition-all shadow-lg transform hover:scale-105 mx-auto"
           >
             <span>Let's Get Started</span>
             <ArrowRight className="w-5 h-5" />

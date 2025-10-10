@@ -30,7 +30,7 @@ export default function WorkoutDetail({ onBack, onStartWorkout }: WorkoutDetailP
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-green-50">
+    <div className="min-h-screen bg-gradient-to-b from-teal-50 to-green-50">
       <div className="relative h-96">
         <img
           src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=800"
@@ -78,8 +78,8 @@ export default function WorkoutDetail({ onBack, onStartWorkout }: WorkoutDetailP
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-teal-600" />
               </div>
               <div>
                 <p className="text-xs text-gray-500">Duration</p>
@@ -95,7 +95,7 @@ export default function WorkoutDetail({ onBack, onStartWorkout }: WorkoutDetailP
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex items-center space-x-4 p-3 bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl border border-blue-100"
+                className="flex items-center space-x-4 p-3 bg-gradient-to-r from-teal-50 to-green-50 rounded-2xl border border-teal-100"
               >
                 <img
                   src={exercise.image}
@@ -108,7 +108,7 @@ export default function WorkoutDetail({ onBack, onStartWorkout }: WorkoutDetailP
                 </div>
                 <motion.button
                   whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-green-600 flex items-center justify-center shadow-lg"
+                  className="w-10 h-10 rounded-full bg-gradient-to-r from-teal-600 to-green-600 flex items-center justify-center shadow-lg"
                 >
                   <Play className="w-5 h-5 text-white ml-0.5" />
                 </motion.button>
@@ -119,7 +119,7 @@ export default function WorkoutDetail({ onBack, onStartWorkout }: WorkoutDetailP
           <motion.button
             whileTap={{ scale: 0.98 }}
             onClick={onStartWorkout}
-            className="w-full mt-6 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold text-lg shadow-xl"
+            className="w-full mt-6 py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-green-600 text-white font-semibold text-lg shadow-xl"
           >
             Start Workout
           </motion.button>
