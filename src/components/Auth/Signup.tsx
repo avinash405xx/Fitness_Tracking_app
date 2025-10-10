@@ -87,8 +87,8 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
 
           <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
             <div className="mb-6">
-              <h2 className="text-white text-2xl font-bold mb-1">Get in & at 3 Free</h2>
-              <p className="text-gray-300 text-sm">Courses</p>
+              <h2 className="text-white text-2xl font-bold mb-1">Start Your Fitness Journey</h2>
+              <p className="text-gray-300 text-sm">Create your free account today</p>
             </div>
 
             {error && (

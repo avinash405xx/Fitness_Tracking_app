@@ -9,37 +9,49 @@ export async function signUp(email: string, password: string, name: string) {
     throw new Error('Password must be at least 6 characters');
   }
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name,
-      },
-    },
-  });
-
-  if (error) throw error;
-
-  if (data.user) {
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: data.user.id,
-      name,
+  try {
+    const { data, error } = await supabase.auth.signUp({
       email,
-      current_streak: 0,
-      longest_streak: 0,
-      total_xp: 0,
-      level: 1,
+      password,
+      options: {
+        data: {
+          name,
+        },
+      },
     });
 
-    if (profileError && !profileError.message.includes('duplicate')) {
-      console.error('Profile creation error:', profileError);
+    if (error) {
+      if (error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check your internet connection and try again.');
+      }
+      throw error;
     }
 
-    await initializeUserMilestones(data.user.id);
-  }
+    if (data.user) {
+      const { error: profileError } = await supabase.from('profiles').insert({
+        id: data.user.id,
+        name,
+        email,
+        current_streak: 0,
+        longest_streak: 0,
+        total_xp: 0,
+        level: 1,
+      });
 
-  return data;
+      if (profileError && !profileError.message.includes('duplicate')) {
+        console.error('Profile creation error:', profileError);
+      }
+
+      await initializeUserMilestones(data.user.id);
+    }
+
+    return data;
+  } catch (error: any) {
+    if (error.message.includes('fetch') || error.name === 'AuthRetryableFetchError') {
+      throw new Error('Unable to connect to server. The database may be paused. Please try again in a moment.');
+    }
+    throw error;
+  }
 }
 
 export async function signIn(email: string, password: string) {
@@ -47,13 +59,25 @@ export async function signIn(email: string, password: string) {
     throw new Error('Email and password are required');
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      if (error.message.includes('fetch')) {
+        throw new Error('Unable to connect to server. Please check your internet connection.');
+      }
+      throw error;
+    }
+    return data;
+  } catch (error: any) {
+    if (error.message.includes('fetch') || error.name === 'AuthRetryableFetchError') {
+      throw new Error('Unable to connect to server. The database may be paused. Please try again in a moment.');
+    }
+    throw error;
+  }
 }
 
 export async function signInWithGoogle() {
