@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react';
-import { User, Mail, Lock, Chrome, AlertCircle, CheckCircle, Wifi } from 'lucide-react';
-import { signUp, signInWithGoogle } from '../../lib/auth';
-import { wakeUpDatabase } from '../../lib/healthCheck';
+import { useState } from 'react';
+import { User, Mail, Lock, Chrome } from 'lucide-react';
 
 interface SignupProps {
   onSwitchToLogin: () => void;
@@ -12,66 +10,26 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isWakingUp, setIsWakingUp] = useState(true);
-
-  useEffect(() => {
-    const initDatabase = async () => {
-      await wakeUpDatabase();
-      setIsWakingUp(false);
-    };
-    initDatabase();
-  }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-
-    if (!name || !email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
     setLoading(true);
 
-    try {
-      await wakeUpDatabase();
-      await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-      await signUp(email, password, name);
-      setSuccess('Account created successfully! Redirecting...');
-      setTimeout(() => {
-        if (onSignupSuccess) {
-          onSignupSuccess();
-        }
-      }, 1500);
-    } catch (err: any) {
-      console.error('Signup error:', err);
-      if (err.message.includes('fetch') || err.name === 'AuthRetryableFetchError') {
-        setError('Database is waking up. Please wait 10 seconds and try again.');
-      } else {
-        setError(err.message || 'Failed to create account. Email may already be in use.');
-      }
-    } finally {
-      setLoading(false);
+    setLoading(false);
+    if (onSignupSuccess) {
+      onSignupSuccess();
     }
   };
 
   const handleGoogleSignup = async () => {
-    try {
-      setError('');
-      await signInWithGoogle();
-    } catch (err: any) {
-      console.error('Google signup error:', err);
-      setError(err.message || 'Failed to sign up with Google');
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    setLoading(false);
+    if (onSignupSuccess) {
+      onSignupSuccess();
     }
   };
 
@@ -108,26 +66,6 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
               <p className="text-gray-300 text-sm">Create your free account today</p>
             </div>
 
-            {error && (
-              <div className="mb-4 bg-red-500/20 border border-red-500/50 rounded-xl p-3 flex items-center space-x-2">
-                <AlertCircle className="w-5 h-5 text-red-200" />
-                <p className="text-red-100 text-sm">{error}</p>
-              </div>
-            )}
-
-            {success && (
-              <div className="mb-4 bg-green-500/20 border border-green-500/50 rounded-xl p-3 flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-green-200" />
-                <p className="text-green-100 text-sm">{success}</p>
-              </div>
-            )}
-
-            {isWakingUp && (
-              <div className="mb-4 bg-blue-500/20 border border-blue-500/50 rounded-xl p-3 flex items-center space-x-2">
-                <Wifi className="w-5 h-5 text-blue-200 animate-pulse" />
-                <p className="text-blue-100 text-sm">Connecting to database...</p>
-              </div>
-            )}
 
             <form onSubmit={handleSignup} className="space-y-5">
               <div>
