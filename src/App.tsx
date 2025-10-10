@@ -3,14 +3,14 @@ import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Welcome from './components/Onboarding/Welcome';
 import GoalSetup from './components/Onboarding/GoalSetup';
-import DashboardMain from './components/Dashboard/DashboardMain';
+import AppModern from './components/App/AppModern';
 import { useAuth } from './contexts/AuthContext';
 
 type AppView = 'login' | 'signup' | 'welcome' | 'goal-setup' | 'dashboard';
 
 function App() {
   const { user, loading } = useAuth();
-  const [currentView, setCurrentView] = useState<AppView>('login');
+  const [currentView, setCurrentView] = useState<AppView>('dashboard');
 
   useEffect(() => {
     if (!loading) {
@@ -61,7 +61,7 @@ function App() {
     );
   }
 
-  return <DashboardMain />;
+  return <AppModern />;
 }
 
 export default App;
