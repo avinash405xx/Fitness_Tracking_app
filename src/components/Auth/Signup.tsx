@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { User, Mail, Lock, Chrome, AlertCircle, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Mail, Lock, Chrome, AlertCircle, CheckCircle, Wifi } from 'lucide-react';
 import { signUp, signInWithGoogle } from '../../lib/auth';
+import { wakeUpDatabase } from '../../lib/healthCheck';
 
 interface SignupProps {
   onSwitchToLogin: () => void;
@@ -14,6 +15,15 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isWakingUp, setIsWakingUp] = useState(true);
+
+  useEffect(() => {
+    const initDatabase = async () => {
+      await wakeUpDatabase();
+      setIsWakingUp(false);
+    };
+    initDatabase();
+  }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +43,9 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
     setLoading(true);
 
     try {
+      await wakeUpDatabase();
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       await signUp(email, password, name);
       setSuccess('Account created successfully! Redirecting...');
       setTimeout(() => {
@@ -42,7 +55,11 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
       }, 1500);
     } catch (err: any) {
       console.error('Signup error:', err);
-      setError(err.message || 'Failed to create account. Email may already be in use.');
+      if (err.message.includes('fetch') || err.name === 'AuthRetryableFetchError') {
+        setError('Database is waking up. Please wait 10 seconds and try again.');
+      } else {
+        setError(err.message || 'Failed to create account. Email may already be in use.');
+      }
     } finally {
       setLoading(false);
     }
@@ -102,6 +119,13 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
               <div className="mb-4 bg-green-500/20 border border-green-500/50 rounded-xl p-3 flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-green-200" />
                 <p className="text-green-100 text-sm">{success}</p>
+              </div>
+            )}
+
+            {isWakingUp && (
+              <div className="mb-4 bg-blue-500/20 border border-blue-500/50 rounded-xl p-3 flex items-center space-x-2">
+                <Wifi className="w-5 h-5 text-blue-200 animate-pulse" />
+                <p className="text-blue-100 text-sm">Connecting to database...</p>
               </div>
             )}
 

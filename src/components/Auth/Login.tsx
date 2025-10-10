@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Mail, Lock, Chrome, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Mail, Lock, Chrome, AlertCircle, Wifi } from 'lucide-react';
 import { signIn, signInWithGoogle } from '../../lib/auth';
+import { wakeUpDatabase } from '../../lib/healthCheck';
 
 interface LoginProps {
   onSwitchToSignup: () => void;
@@ -12,6 +13,15 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isWakingUp, setIsWakingUp] = useState(true);
+
+  useEffect(() => {
+    const initDatabase = async () => {
+      await wakeUpDatabase();
+      setIsWakingUp(false);
+    };
+    initDatabase();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,13 +35,20 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
     setLoading(true);
 
     try {
+      await wakeUpDatabase();
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       await signIn(email, password);
       if (onLoginSuccess) {
         onLoginSuccess();
       }
     } catch (err: any) {
       console.error('Login error:', err);
-      setError(err.message || 'Failed to sign in. Please check your credentials.');
+      if (err.message.includes('fetch') || err.name === 'AuthRetryableFetchError') {
+        setError('Database is waking up. Please wait 10 seconds and try again.');
+      } else {
+        setError(err.message || 'Failed to sign in. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -84,6 +101,13 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
               <div className="mb-4 bg-red-500/20 border border-red-500/50 rounded-xl p-3 flex items-center space-x-2">
                 <AlertCircle className="w-5 h-5 text-red-200" />
                 <p className="text-red-100 text-sm">{error}</p>
+              </div>
+            )}
+
+            {isWakingUp && (
+              <div className="mb-4 bg-blue-500/20 border border-blue-500/50 rounded-xl p-3 flex items-center space-x-2">
+                <Wifi className="w-5 h-5 text-blue-200 animate-pulse" />
+                <p className="text-blue-100 text-sm">Connecting to database...</p>
               </div>
             )}
 
