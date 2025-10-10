@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Droplet, Flame, Weight, Activity, ChevronDown, Bell, Search, Plus } from 'lucide-react';
 import CircularProgress from '../shared/CircularProgress';
+import FitnessVideo from '../shared/FitnessVideo';
+import { getFoodImage } from '../../constants/foodImages';
 
 interface DashboardModernProps {
   onNavigate: (page: string) => void;
@@ -16,20 +18,20 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
   const activities = [
     {
       title: 'Drinking Tracker',
-      subtitle: 'Stay hydrated. it\'s nature\'s best nutrient',
-      image: 'https://images.pexels.com/photos/416528/pexels-photo-416528.jpeg?auto=compress&cs=tinysrgb&w=400',
+      subtitle: 'Stay hydrated, nature\'s best nutrient',
+      videoUrl: 'https://videos.pexels.com/video-files/6985001/6985001-uhd_2560_1440_30fps.mp4',
       color: 'from-lime-400 to-lime-500',
     },
     {
       title: 'Daily Exercise',
-      subtitle: 'Stay hydrated. it\'s nature\'s best nutrient',
-      image: 'https://images.pexels.com/photos/4662438/pexels-photo-4662438.jpeg?auto=compress&cs=tinysrgb&w=400',
+      subtitle: 'Build strength and endurance',
+      videoUrl: 'https://videos.pexels.com/video-files/4753989/4753989-uhd_2560_1440_30fps.mp4',
       color: 'from-white to-gray-100',
     },
     {
       title: 'Sleep Tracker',
-      subtitle: 'Stay hydrated. it\'s nature\'s best nutrient',
-      image: 'https://images.pexels.com/photos/3771069/pexels-photo-3771069.jpeg?auto=compress&cs=tinysrgb&w=400',
+      subtitle: 'Quality sleep for recovery',
+      videoUrl: 'https://videos.pexels.com/video-files/5357416/5357416-uhd_2560_1440_30fps.mp4',
       color: 'from-gray-800 to-gray-900',
     },
   ];
@@ -104,29 +106,29 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
         </div>
 
         {/* Main Content */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-7 space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <img
                 src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100"
                 alt="User"
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
               />
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Jenny Wilson</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">Jenny Wilson</h2>
               </div>
-              <button className="flex items-center space-x-2 px-4 py-2 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
-                <span className="text-sm text-gray-600">Monthly</span>
+              <button className="hidden sm:flex items-center space-x-2 px-3 sm:px-4 py-2 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
+                <span className="text-xs sm:text-sm text-gray-600">Monthly</span>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </button>
             </div>
-            <div className="flex items-center space-x-3">
-              <button className="w-10 h-10 bg-white rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors">
-                <Bell className="w-5 h-5 text-gray-700" />
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <button className="w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors">
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
               </button>
-              <button className="w-10 h-10 bg-white rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors">
-                <Search className="w-5 h-5 text-gray-700" />
+              <button className="w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors">
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
               </button>
             </div>
           </div>
@@ -135,24 +137,24 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-900 rounded-3xl p-8"
+            className="bg-gray-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">Body Overview</h3>
-              <button className="text-sm text-gray-400 hover:text-white transition-colors">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-bold text-white">Body Overview</h3>
+              <button className="text-xs sm:text-sm text-gray-400 hover:text-white transition-colors">
                 See All
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {/* Calorie Section */}
               <div>
-                <div className="bg-lime-400/10 border border-lime-400/20 rounded-2xl p-6 mb-4">
-                  <p className="text-lime-400 text-sm mb-2">You've gain 2kg in a month keep it up!</p>
+                <div className="bg-lime-400/10 border border-lime-400/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-3 sm:mb-4">
+                  <p className="text-lime-400 text-xs sm:text-sm mb-2">You've gain 2kg in a month keep it up!</p>
                   <p className="text-gray-400 text-xs">Still need to gain</p>
-                  <div className="mt-4">
-                    <p className="text-5xl font-bold text-white">950</p>
-                    <p className="text-gray-400 text-sm">kcal</p>
+                  <div className="mt-3 sm:mt-4">
+                    <p className="text-4xl sm:text-5xl font-bold text-white">950</p>
+                    <p className="text-gray-400 text-xs sm:text-sm">kcal</p>
                   </div>
                 </div>
 
@@ -171,8 +173,8 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
               <div className="space-y-4">
                 <h4 className="text-white font-semibold mb-4">My Daily Target</h4>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-2xl p-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
+                  <div className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                     <div className="flex items-center space-x-2 mb-2">
                       <Droplet className="w-5 h-5 text-blue-400" />
                       <span className="text-gray-400 text-sm">Water</span>
@@ -221,7 +223,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {activities.map((activity, index) => (
                 <motion.button
                   key={activity.title}
@@ -230,19 +232,21 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.02 }}
                   onClick={() => onNavigate(activity.title.toLowerCase())}
-                  className={`bg-gradient-to-br ${activity.color} rounded-3xl p-6 text-left overflow-hidden relative h-48`}
+                  className={`rounded-3xl p-4 sm:p-6 text-left overflow-hidden relative h-40 sm:h-48`}
                 >
-                  <h4 className={`text-lg font-bold mb-2 ${activity.color.includes('gray-800') ? 'text-white' : 'text-gray-900'}`}>
-                    {activity.title}
-                  </h4>
-                  <p className={`text-sm mb-4 ${activity.color.includes('gray-800') ? 'text-gray-300' : 'text-gray-600'}`}>
-                    {activity.subtitle}
-                  </p>
-                  <img
-                    src={activity.image}
-                    alt={activity.title}
-                    className="absolute bottom-0 right-0 w-32 h-32 object-cover rounded-tl-3xl"
+                  <FitnessVideo
+                    videoUrl={activity.videoUrl}
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${activity.color} opacity-70`} />
+                  <div className="relative z-10">
+                    <h4 className={`text-base sm:text-lg font-bold mb-1 sm:mb-2 ${activity.color.includes('gray-800') ? 'text-white' : 'text-gray-900'}`}>
+                      {activity.title}
+                    </h4>
+                    <p className={`text-xs sm:text-sm ${activity.color.includes('gray-800') ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {activity.subtitle}
+                    </p>
+                  </div>
                 </motion.button>
               ))}
             </div>
@@ -250,20 +254,20 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
         </div>
 
         {/* Right Sidebar - Meal Plan */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white rounded-3xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">My Meal Plan</h3>
+        <div className="lg:col-span-4 space-y-4 sm:space-y-6">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900">My Meal Plan</h3>
             </div>
 
-            <div className="bg-gray-50 rounded-2xl p-4 mb-4">
-              <p className="text-sm text-gray-600 mb-1">Sat, 09 September 2023</p>
+            <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 mb-3 sm:mb-4">
+              <p className="text-xs sm:text-sm text-gray-600 mb-1">Sat, 09 September 2023</p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {mealPlan.map((item) => (
-                <div key={item.meal} className="border-b border-gray-100 pb-4">
-                  <div className="flex items-center justify-between mb-3">
+                <div key={item.meal} className="border-b border-gray-100 pb-3 sm:pb-4">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
                     <div className="flex items-center space-x-2">
                       <div className={`w-2 h-2 rounded-full ${item.hasItems ? 'bg-gray-900' : 'bg-gray-300'}`} />
                       <span className="font-semibold text-gray-900">{item.meal}</span>
