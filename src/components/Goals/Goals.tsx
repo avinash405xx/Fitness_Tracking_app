@@ -76,11 +76,12 @@ export default function Goals() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-teal-900 via-green-900 to-teal-800 pb-24">
+      <div className="px-6 pt-12 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Goals</h1>
-          <p className="text-gray-600">Set and track your fitness objectives</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Goals</h1>
+          <p className="text-white/80">Set and track your fitness objectives</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
@@ -100,7 +101,7 @@ export default function Goals() {
           return (
             <div
               key={goal.id}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all"
+              className="bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-sm border border-white/20 hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className={`w-14 h-14 bg-gradient-to-br ${goal.color} rounded-2xl flex items-center justify-center shadow-lg`}>
@@ -114,14 +115,14 @@ export default function Goals() {
                 )}
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{goal.name}</h3>
-              <p className="text-sm text-gray-600 mb-4">{goal.category}</p>
+              <h3 className="text-xl font-bold text-white mb-1">{goal.name}</h3>
+              <p className="text-sm text-white/80 mb-4">{goal.category}</p>
 
               <div className="space-y-3">
                 <div className="flex justify-between items-end">
                   <div>
-                    <p className="text-3xl font-bold text-gray-900">{goal.current}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-3xl font-bold text-white">{goal.current}</p>
+                    <p className="text-sm text-white/80">
                       of {goal.target} {goal.unit}
                     </p>
                   </div>
@@ -129,7 +130,7 @@ export default function Goals() {
                     <p className="text-2xl font-bold text-emerald-600">
                       {Math.min(percentage, 100).toFixed(0)}%
                     </p>
-                    <p className="text-xs text-gray-600">Progress</p>
+                    <p className="text-xs text-white/80">Progress</p>
                   </div>
                 </div>
 
@@ -141,7 +142,7 @@ export default function Goals() {
                 </div>
 
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">
+                  <span className="text-white/80">
                     {goal.target - goal.current > 0
                       ? `${(goal.target - goal.current).toFixed(1)} ${goal.unit} to go`
                       : 'Goal achieved!'}
@@ -156,8 +157,8 @@ export default function Goals() {
         })}
       </div>
 
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-        <h2 className="text-xl font-bold text-gray-900 mb-6">Goal Categories</h2>
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-sm border border-white/20">
+        <h2 className="text-xl font-bold text-white mb-6">Goal Categories</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {categories.map((category) => {
             const Icon = category.icon;
@@ -190,8 +191,8 @@ export default function Goals() {
 
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Goal</h2>
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <h2 className="text-2xl font-bold text-white mb-6">Create New Goal</h2>
             <form className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -266,6 +267,7 @@ export default function Goals() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
