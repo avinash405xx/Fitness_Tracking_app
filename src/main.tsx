@@ -4,10 +4,20 @@ import App from './App.tsx';
 import { AuthProvider } from './contexts/AuthContext';
 import './index.css';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </StrictMode>
-);
+console.log('Main.tsx executing...');
+
+const rootElement = document.getElementById('root');
+console.log('Root element:', rootElement);
+
+if (rootElement) {
+  createRoot(rootElement).render(
+    <StrictMode>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </StrictMode>
+  );
+  console.log('React app mounted');
+} else {
+  console.error('Root element not found!');
+}

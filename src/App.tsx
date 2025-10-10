@@ -13,6 +13,7 @@ function App() {
   const [currentView, setCurrentView] = useState<AppView>('login');
 
   useEffect(() => {
+    console.log('Auth state:', { user: !!user, loading });
     if (!loading) {
       if (user) {
         setCurrentView('dashboard');
@@ -21,6 +22,8 @@ function App() {
       }
     }
   }, [user, loading]);
+
+  console.log('App rendering:', { loading, currentView });
 
   if (loading) {
     return (
