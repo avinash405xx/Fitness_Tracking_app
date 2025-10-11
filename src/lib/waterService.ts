@@ -140,7 +140,17 @@ export async function updateTotalWaterIntake(userId: string, date?: string): Pro
 export async function getWaterProgressByDate(userId: string, date: string): Promise<{ intake: number; goal: number; percentage: number }> {
   const stats = await getStatsByDate(userId, date);
   const intake = stats.water_intake_ml || 0;
-  const goal = stats.water_goal_ml || 2300;
+
+  const { data: waterGoal } = await supabase
+    .from('goals')
+    .select('target_value')
+    .eq('user_id', userId)
+    .eq('category', 'nutrition')
+    .ilike('name', '%water%')
+    .eq('status', 'active')
+    .maybeSingle();
+
+  const goal = waterGoal ? parseFloat(waterGoal.target_value) : 2300;
   const percentage = Math.min(Math.round((intake / goal) * 100), 100);
 
   return { intake, goal, percentage };
