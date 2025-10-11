@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Droplet, Plus, Minus } from 'lucide-react';
-import { getWaterLogs, addWaterLog, deleteWaterLog, getDailyStats, updateDailyStats, type WaterLog } from '../../lib/dataService';
+import { useAuth } from '../../contexts/AuthContext';
+import { getTodaysWaterLogs, addWaterLog, deleteWaterLog, getWaterProgress, type WaterLog } from '../../lib/waterService';
 
 interface DrinkingTrackerProps {
   onBack: () => void;
 }
 
 export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
+  const { user } = useAuth();
   const [waterLogs, setWaterLogs] = useState<WaterLog[]>([]);
   const [totalIntake, setTotalIntake] = useState(0);
   const [goal, setGoal] = useState(2300);
@@ -15,22 +17,21 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [user]);
 
   const loadData = async () => {
+    if (!user) return;
+
     try {
-      const [logs, stats] = await Promise.all([
-        getWaterLogs(),
-        getDailyStats(),
+      setLoading(true);
+      const [logs, progress] = await Promise.all([
+        getTodaysWaterLogs(user.id),
+        getWaterProgress(user.id),
       ]);
 
       setWaterLogs(logs);
-      const total = logs.reduce((sum, log) => sum + log.amount_ml, 0);
-      setTotalIntake(total);
-
-      if (stats) {
-        setGoal(stats.water_goal_ml);
-      }
+      setTotalIntake(progress.intake);
+      setGoal(progress.goal);
     } catch (error) {
       console.error('Error loading water data:', error);
     } finally {
@@ -39,28 +40,24 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
   };
 
   const handleAddWater = async (amount: number) => {
+    if (!user) return;
+
     try {
-      const newLog = await addWaterLog(amount);
+      const newLog = await addWaterLog(user.id, amount);
       setWaterLogs((prev) => [newLog, ...prev]);
       setTotalIntake((prev) => prev + amount);
-
-      await updateDailyStats({
-        water_intake_ml: totalIntake + amount,
-      });
     } catch (error) {
       console.error('Error adding water:', error);
     }
   };
 
   const handleDeleteLog = async (id: string, amount: number) => {
+    if (!user) return;
+
     try {
-      await deleteWaterLog(id);
+      await deleteWaterLog(id, user.id);
       setWaterLogs((prev) => prev.filter((log) => log.id !== id));
       setTotalIntake((prev) => prev - amount);
-
-      await updateDailyStats({
-        water_intake_ml: totalIntake - amount,
-      });
     } catch (error) {
       console.error('Error deleting water log:', error);
     }
@@ -89,7 +86,6 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
       <div className="px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-24 max-w-4xl mx-auto">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <button onClick={onBack} className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
             <ArrowLeft className="w-5 h-5 text-gray-700" />
@@ -98,7 +94,6 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
           <div className="w-10" />
         </div>
 
-        {/* Hero Image */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -111,7 +106,6 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
           />
         </motion.div>
 
-        {/* Progress Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -138,6 +132,7 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
                   strokeDasharray={`${2 * Math.PI * 80}`}
                   strokeDashoffset={`${2 * Math.PI * 80 * (1 - percentage / 100)}`}
                   strokeLinecap="round"
+                  className="transition-all duration-300"
                 />
                 <defs>
                   <linearGradient id="waterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -157,12 +152,17 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
               <p className="text-4xl sm:text-5xl font-bold text-gray-900 mb-2">{Math.round(percentage)}%</p>
               <p className="text-gray-500 text-sm sm:text-base mb-4">Daily Goal Completed</p>
               <p className="text-gray-600 text-sm">
-                <span className="font-semibold">{goal - totalIntake}ml</span> remaining
+                {totalIntake >= goal ? (
+                  <span className="font-semibold text-green-600">Goal achieved!</span>
+                ) : (
+                  <>
+                    <span className="font-semibold">{goal - totalIntake}ml</span> remaining
+                  </>
+                )}
               </p>
             </div>
           </div>
 
-          {/* Quick Add Buttons */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[100, 200, 300, 500].map((amount) => (
               <motion.button
@@ -177,7 +177,6 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
           </div>
         </motion.div>
 
-        {/* Today's Intake */}
         <div className="bg-white rounded-3xl p-6 shadow-lg">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Today's Intake</h3>
           {waterLogs.length === 0 ? (
@@ -221,7 +220,6 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
           )}
         </div>
 
-        {/* Tips */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

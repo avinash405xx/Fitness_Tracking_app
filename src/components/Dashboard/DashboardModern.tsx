@@ -5,6 +5,7 @@ import CircularProgress from '../shared/CircularProgress';
 import FitnessVideo from '../shared/FitnessVideo';
 import { useAuth } from '../../contexts/AuthContext';
 import { getTodaysMeals, getTodayStats, addMeal, deleteMeal, updateMeal, type Meal } from '../../lib/mealService';
+import { getWaterProgress } from '../../lib/waterService';
 
 interface DashboardModernProps {
   onNavigate: (page: string) => void;
@@ -17,7 +18,10 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
   const [loading, setLoading] = useState(true);
   const [showMealModal, setShowMealModal] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'dinner'>('breakfast');
-  const [mealForm, setMealForm] = useState({ name: '', calories: 0, protein: 0, carbs: 0, fats: 0 });
+  const [mealForm, setMealForm] = useState({ name: '', calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0 });
+  const [waterIntake, setWaterIntake] = useState(0);
+  const [waterGoal, setWaterGoal] = useState(2300);
+  const [waterPercentage, setWaterPercentage] = useState(0);
   const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
 
   const activities = [
@@ -50,13 +54,17 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
 
     try {
       setLoading(true);
-      const [mealsData, statsData] = await Promise.all([
+      const [mealsData, statsData, waterData] = await Promise.all([
         getTodaysMeals(user.id),
         getTodayStats(user.id),
+        getWaterProgress(user.id),
       ]);
 
       setMeals(mealsData);
       setDailyStats(statsData);
+      setWaterIntake(waterData.intake);
+      setWaterGoal(waterData.goal);
+      setWaterPercentage(waterData.percentage);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -88,7 +96,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
 
       await loadData();
       setShowMealModal(false);
-      setMealForm({ name: '', calories: 0, protein: 0, carbs: 0, fats: 0 });
+      setMealForm({ name: '', calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0 });
       setEditingMeal(null);
     } catch (error) {
       console.error('Error saving meal:', error);
@@ -115,6 +123,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
       protein: meal.protein,
       carbs: meal.carbs,
       fats: meal.fats,
+      fiber: meal.fiber,
     });
     setShowMealModal(true);
   };
@@ -133,6 +142,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
   const totalProtein = meals.reduce((sum, meal) => sum + meal.protein, 0);
   const totalCarbs = meals.reduce((sum, meal) => sum + meal.carbs, 0);
   const totalFats = meals.reduce((sum, meal) => sum + meal.fats, 0);
+  const totalFiber = meals.reduce((sum, meal) => sum + meal.fiber, 0);
   const totalMacros = totalProtein + totalCarbs + totalFats || 1;
 
   const proteinPercent = Math.round((totalProtein / totalMacros) * 100);
@@ -149,6 +159,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
     { label: 'Carbs', value: carbsPercent, color: 'bg-yellow-400', amount: `${totalCarbs}g` },
     { label: 'Fats', value: fatsPercent, color: 'bg-red-400', amount: `${totalFats}g` },
     { label: 'Protein', value: proteinPercent, color: 'bg-blue-500', amount: `${totalProtein}g` },
+    { label: 'Fiber', value: totalFiber > 0 ? Math.min(Math.round((totalFiber / 30) * 100), 100) : 0, color: 'bg-green-500', amount: `${totalFiber}g` },
   ];
 
   if (loading) {
@@ -253,8 +264,14 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                     </div>
                     <p className="text-white text-sm mb-1">Total Goal</p>
                     <p className="text-2xl font-bold text-white">
-                      {dailyStats?.water_goal_ml || 2300}ml
+                      {waterIntake}/{waterGoal}ml
                     </p>
+                    <div className="mt-2 w-full bg-white/10 rounded-full h-1.5">
+                      <div
+                        className="bg-blue-400 h-1.5 rounded-full transition-all duration-300"
+                        style={{ width: `${waterPercentage}%` }}
+                      />
+                    </div>
                   </div>
 
                   <div className="bg-white/5 rounded-2xl p-4">
@@ -451,7 +468,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                   placeholder="0"
                 />
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Protein (g)</label>
                   <input
@@ -482,13 +499,23 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                     placeholder="0"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Fiber (g)</label>
+                  <input
+                    type="number"
+                    value={mealForm.fiber || ''}
+                    onChange={(e) => setMealForm({ ...mealForm, fiber: parseInt(e.target.value) || 0 })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent"
+                    placeholder="0"
+                  />
+                </div>
               </div>
               <div className="flex space-x-3 pt-4">
                 <button
                   onClick={() => {
                     setShowMealModal(false);
                     setEditingMeal(null);
-                    setMealForm({ name: '', calories: 0, protein: 0, carbs: 0, fats: 0 });
+                    setMealForm({ name: '', calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0 });
                   }}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
                 >

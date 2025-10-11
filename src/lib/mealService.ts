@@ -9,6 +9,7 @@ export interface Meal {
   protein: number;
   carbs: number;
   fats: number;
+  fiber: number;
   meal_date: string;
   created_at: string;
 }
@@ -57,6 +58,7 @@ export async function addMeal(
     protein?: number;
     carbs?: number;
     fats?: number;
+    fiber?: number;
   }
 ): Promise<Meal> {
   const today = new Date().toISOString().split('T')[0];
@@ -71,6 +73,7 @@ export async function addMeal(
       protein: mealData.protein || 0,
       carbs: mealData.carbs || 0,
       fats: mealData.fats || 0,
+      fiber: mealData.fiber || 0,
       meal_date: today,
     })
     .select()
@@ -95,6 +98,7 @@ export async function updateMeal(
     protein?: number;
     carbs?: number;
     fats?: number;
+    fiber?: number;
   }
 ): Promise<Meal> {
   const { data, error } = await supabase
