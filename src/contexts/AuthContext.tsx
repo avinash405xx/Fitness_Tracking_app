@@ -31,8 +31,83 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (userId: string) => {
-    const profileData = await getProfile(userId);
+    let profileData = await getProfile(userId);
+
+    if (!profileData) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const name = user.user_metadata?.name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+        const email = user.email || '';
+
+        const { error: profileError } = await supabase.from('profiles').insert({
+          id: userId,
+          name,
+          email,
+          current_streak: 0,
+          longest_streak: 0,
+          total_xp: 0,
+          level: 1,
+        });
+
+        if (profileError && !profileError.message.includes('duplicate')) {
+          console.error('Profile creation error:', profileError);
+        } else {
+          profileData = await getProfile(userId);
+        }
+
+        await initializeUserMilestones(userId);
+      }
+    }
+
     setProfile(profileData);
+  };
+
+  const initializeUserMilestones = async (userId: string) => {
+    const defaultMilestones = [
+      {
+        user_id: userId,
+        milestone_type: 'first_workout',
+        name: 'First Steps',
+        description: 'Log your first workout',
+        current_progress: 0,
+        target_progress: 1,
+      },
+      {
+        user_id: userId,
+        milestone_type: 'workouts_5',
+        name: 'Getting Started',
+        description: 'Complete 5 workouts',
+        current_progress: 0,
+        target_progress: 5,
+      },
+      {
+        user_id: userId,
+        milestone_type: 'streak_7',
+        name: 'On Fire',
+        description: 'Maintain a 7-day streak',
+        current_progress: 0,
+        target_progress: 7,
+      },
+      {
+        user_id: userId,
+        milestone_type: 'meals_14',
+        name: 'Consistency King',
+        description: 'Log meals for 14 consecutive days',
+        current_progress: 0,
+        target_progress: 14,
+      },
+      {
+        user_id: userId,
+        milestone_type: 'goal_complete',
+        name: 'Goal Crusher',
+        description: 'Complete your first goal',
+        current_progress: 0,
+        target_progress: 1,
+      },
+    ];
+
+    const { error } = await supabase.from('milestones').insert(defaultMilestones);
+    if (error) console.error('Error initializing milestones:', error);
   };
 
   const refreshProfile = async () => {
