@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { addWeightEntry } from './weightHistoryService';
 
 export interface Goal {
   id: string;
@@ -129,6 +130,15 @@ export async function createGoal(userId: string, goalData: CreateGoalInput): Pro
     throw error;
   }
 
+  if (goalData.category === 'bodyweight' && currentValue > 0) {
+    await addWeightEntry(userId, {
+      weight: currentValue,
+      unit: goalData.unit,
+      goal_id: data.id,
+      notes: 'Initial weight',
+    });
+  }
+
   return data;
 }
 
@@ -190,6 +200,12 @@ export async function updateGoalProgress(
   };
 
   if (goal.category === 'bodyweight') {
+    await addWeightEntry(userId, {
+      weight: currentValue,
+      unit: goal.unit,
+      goal_id: goalId,
+    });
+
     if (currentValue === goal.target_value && goal.status !== 'completed') {
       updates.status = 'completed';
     }
