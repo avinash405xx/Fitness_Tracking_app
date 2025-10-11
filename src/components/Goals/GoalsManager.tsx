@@ -92,12 +92,16 @@ export default function GoalsManager() {
   };
 
   const categoryOptions = [
-    { value: 'weight', label: 'Weight', icon: 'target', color: 'from-blue-600 to-cyan-600' },
     { value: 'fitness', label: 'Fitness', icon: 'zap', color: 'from-orange-500 to-red-600' },
     { value: 'nutrition', label: 'Nutrition', icon: 'heart', color: 'from-red-500 to-pink-600' },
-    { value: 'wellness', label: 'Wellness', icon: 'droplets', color: 'from-cyan-500 to-blue-600' },
-    { value: 'custom', label: 'Custom', icon: 'award', color: 'from-emerald-500 to-teal-600' },
+    { value: 'bodyweight', label: 'Body Weight', icon: 'target', color: 'from-blue-600 to-cyan-600' },
   ];
+
+  const unitOptions: Record<string, string[]> = {
+    fitness: ['meters', 'minutes', 'Kgs'],
+    bodyweight: ['Kgs'],
+    nutrition: ['Kcal', 'grams'],
+  };
 
   const handleOpenCreate = () => {
     setModalMode('create');
@@ -108,9 +112,9 @@ export default function GoalsManager() {
       category: 'fitness',
       target_value: '',
       current_value: '0',
-      unit: '',
-      icon: 'target',
-      color: 'from-blue-600 to-green-600',
+      unit: 'meters',
+      icon: 'zap',
+      color: 'from-orange-500 to-red-600',
       target_date: '',
       priority: 'medium',
     });
@@ -199,11 +203,13 @@ export default function GoalsManager() {
   const handleCategoryChange = (category: string) => {
     const categoryOption = categoryOptions.find((opt) => opt.value === category);
     if (categoryOption) {
+      const availableUnits = unitOptions[category] || [];
       setFormData((prev) => ({
         ...prev,
         category,
         icon: categoryOption.icon,
         color: categoryOption.color,
+        unit: availableUnits[0] || prev.unit,
       }));
     }
   };
@@ -510,14 +516,18 @@ export default function GoalsManager() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Unit</label>
-                      <input
-                        type="text"
+                      <select
                         value={formData.unit}
                         onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                        placeholder="e.g., kg, km, sessions"
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                         required
-                      />
+                      >
+                        {(unitOptions[formData.category] || []).map((unit) => (
+                          <option key={unit} value={unit}>
+                            {unit}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
