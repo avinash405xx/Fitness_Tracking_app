@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
-import { Droplet, Flame, Weight, Activity, ChevronDown, Bell, Search, Plus, Edit2, Trash2 } from 'lucide-react';
+import { Droplet, Flame, Weight, Activity, ChevronDown, Bell, Search, Plus, Edit2, Trash2, Target, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import CircularProgress from '../shared/CircularProgress';
 import FitnessVideo from '../shared/FitnessVideo';
 import { useAuth } from '../../contexts/AuthContext';
 import { getTodaysMeals, getTodayStats, addMeal, deleteMeal, updateMeal, type Meal } from '../../lib/mealService';
 import { getWaterProgress } from '../../lib/waterService';
+import { getGoals, calculateGoalProgress, type Goal } from '../../lib/goalsService';
 
 interface DashboardModernProps {
   onNavigate: (page: string) => void;
@@ -23,6 +24,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
   const [waterGoal, setWaterGoal] = useState(2300);
   const [waterPercentage, setWaterPercentage] = useState(0);
   const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
+  const [goals, setGoals] = useState<Goal[]>([]);
 
   const activities = [
     {
@@ -54,10 +56,11 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
 
     try {
       setLoading(true);
-      const [mealsData, statsData, waterData] = await Promise.all([
+      const [mealsData, statsData, waterData, goalsData] = await Promise.all([
         getTodaysMeals(user.id),
         getTodayStats(user.id),
         getWaterProgress(user.id),
+        getGoals(user.id),
       ]);
 
       setMeals(mealsData);
@@ -65,6 +68,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
       setWaterIntake(waterData.intake);
       setWaterGoal(waterData.goal);
       setWaterPercentage(waterData.percentage);
+      setGoals(goalsData.filter(g => g.status === 'active').slice(0, 3));
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -221,7 +225,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
             className="bg-gray-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8"
           >
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h3 className="text-lg sm:text-xl font-bold text-white">Body Overview</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-white">Your Trackers</h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
@@ -439,6 +443,58 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
               ))}
             </div>
           </div>
+
+          {goals.length > 0 && (
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">Your Goals</h3>
+                <button
+                  onClick={() => onNavigate('goals')}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-semibold flex items-center space-x-1"
+                >
+                  <span>View All</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {goals.map((goal) => {
+                  const progress = calculateGoalProgress(goal.current_value, goal.target_value);
+                  const remaining = goal.target_value - goal.current_value;
+
+                  return (
+                    <div
+                      key={goal.id}
+                      onClick={() => onNavigate('goals')}
+                      className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-10 h-10 bg-gradient-to-br ${goal.color} rounded-lg flex items-center justify-center`}>
+                            <Target className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-gray-900">{goal.name}</h4>
+                            <p className="text-xs text-gray-500">{goal.category}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-gray-900">{progress.toFixed(0)}%</p>
+                          <p className="text-xs text-gray-500">{remaining > 0 ? `${remaining.toFixed(1)} ${goal.unit} left` : 'Complete!'}</p>
+                        </div>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full bg-gradient-to-r ${goal.color} rounded-full transition-all duration-300`}
+                          style={{ width: `${Math.min(progress, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

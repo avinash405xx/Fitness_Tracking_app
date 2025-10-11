@@ -4,7 +4,7 @@ import DashboardModern from '../Dashboard/DashboardModern';
 import WorkoutDetail from '../Workout/WorkoutDetail';
 import WorkoutTimer from '../Workout/WorkoutTimer';
 import WorkoutsList from '../Workouts/WorkoutsList';
-import Goals from '../Goals/Goals';
+import GoalsManager from '../Goals/GoalsManager';
 import Profile from '../Profile/Profile';
 import WaterTracker from '../Tracker/WaterTracker';
 import SleepTracker from '../Tracker/SleepTracker';
@@ -71,7 +71,7 @@ export default function AppModern({ onLogout }: AppModernProps) {
       case 'workouts':
         return <WorkoutsList onWorkoutClick={() => setCurrentScreen('workout-detail')} />;
       case 'goals':
-        return <Goals />;
+        return <GoalsManager />;
       case 'profile':
         return <Profile onLogout={onLogout} />;
       case 'workout-detail':
