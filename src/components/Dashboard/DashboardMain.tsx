@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Target, ClipboardList, User, LogOut } from 'lucide-react';
+import { LayoutDashboard, Target, ClipboardList, LogOut } from 'lucide-react';
 import DashboardMinimal from './DashboardMinimal';
 import GoalsMinimal from '../Goals/GoalsMinimal';
 import Logs from '../Logs/Logs';
+import Avatar from '../shared/Avatar';
+import { useAuth } from '../../contexts/AuthContext';
 
 type Tab = 'dashboard' | 'goals' | 'logs';
 
 export default function DashboardMain() {
   const [currentTab, setCurrentTab] = useState<Tab>('dashboard');
+  const { profile } = useAuth();
 
   const handleLogout = () => {
     console.log('Logout clicked');
@@ -73,9 +76,9 @@ export default function DashboardMain() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <User className="w-5 h-5 text-gray-600" />
+                <Avatar src={profile?.avatar_url} name={profile?.name} size="md" />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}

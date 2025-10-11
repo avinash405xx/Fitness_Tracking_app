@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Mail, Lock, Chrome } from 'lucide-react';
+import { signIn, signInWithGoogle } from '../../lib/auth';
 
 interface LoginProps {
   onSwitchToSignup: () => void;
@@ -10,25 +11,42 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
-    await new Promise(resolve => setTimeout(resolve, 800));
+    try {
+      await signIn(email, password);
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+    } catch (err: any) {
+      const errorMessage = err.message || 'Failed to log in. Please check your credentials.';
 
-    setLoading(false);
-    if (onLoginSuccess) {
-      onLoginSuccess();
+      if (errorMessage.includes('Email not confirmed') || errorMessage.includes('invalid')) {
+        setError('Invalid credentials. If you just signed up, please check your email to confirm your account first.');
+      } else {
+        setError(errorMessage);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setLoading(false);
-    if (onLoginSuccess) {
-      onLoginSuccess();
+    setError('');
+    try {
+      await signInWithGoogle();
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to log in with Google.');
+      setLoading(false);
     }
   };
 
@@ -67,6 +85,12 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
 
 
             <form onSubmit={handleLogin} className="space-y-5">
+              {error && (
+                <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-3 text-red-100 text-sm">
+                  {error}
+                </div>
+              )}
+
               <div>
                 <label className="block text-gray-300 text-sm mb-2">Email</label>
                 <div className="relative">

@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '@supabase/supabase-js';
-import { Profile } from '../lib/supabase';
+import { Profile, supabase } from '../lib/supabase';
+import { getCurrentUser, getProfile } from '../lib/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -25,30 +26,78 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const mockUser = {
-    id: 'mock-user-123',
-    email: 'demo@fitness.app',
-  } as User;
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const mockProfile: Profile = {
-    id: 'mock-user-123',
-    name: 'Avinash Kumar',
-    email: 'avinash.kumar550@gmail.com',
-    current_streak: 5,
-    longest_streak: 12,
-    total_xp: 350,
-    level: 3,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+  const loadProfile = async (userId: string) => {
+    const profileData = await getProfile(userId);
+    setProfile(profileData);
   };
-
-  const [user] = useState<User | null>(mockUser);
-  const [profile] = useState<Profile | null>(mockProfile);
-  const [loading] = useState(false);
 
   const refreshProfile = async () => {
-    console.log('Mock refresh profile');
+    if (user) {
+      await loadProfile(user.id);
+    }
   };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const initAuth = async () => {
+      try {
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth timeout')), 5000)
+        );
+
+        const authPromise = getCurrentUser();
+
+        const currentUser = await Promise.race([authPromise, timeoutPromise]) as User | null;
+
+        if (!mounted) return;
+
+        setUser(currentUser);
+
+        if (currentUser) {
+          await loadProfile(currentUser.id);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (mounted) {
+          setUser(null);
+          setProfile(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initAuth();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        (async () => {
+          if (!mounted) return;
+
+          const currentUser = session?.user ?? null;
+          setUser(currentUser);
+
+          if (currentUser) {
+            await loadProfile(currentUser.id);
+          } else {
+            setProfile(null);
+          }
+        })();
+      }
+    );
+
+    return () => {
+      mounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, refreshProfile }}>
