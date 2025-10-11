@@ -135,7 +135,8 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
   };
 
   const totalCalories = dailyStats?.calories_consumed || 0;
-  const calorieGoal = dailyStats?.calories_goal || 2000;
+  const calorieIntakeGoal = goals.find(g => g.name.toLowerCase().includes('calorie') && g.category === 'nutrition');
+  const calorieGoal = calorieIntakeGoal ? parseFloat(calorieIntakeGoal.target_value) : (dailyStats?.calories_goal || 2000);
   const caloriesBurned = dailyStats?.calories_burned || 0;
   const remainingCalories = (calorieGoal + caloriesBurned) - totalCalories;
 
