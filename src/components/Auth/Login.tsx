@@ -24,7 +24,13 @@ export default function Login({ onSwitchToSignup, onLoginSuccess }: LoginProps) 
         onLoginSuccess();
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to log in. Please check your credentials.');
+      const errorMessage = err.message || 'Failed to log in. Please check your credentials.';
+
+      if (errorMessage.includes('Email not confirmed') || errorMessage.includes('invalid')) {
+        setError('Invalid credentials. If you just signed up, please check your email to confirm your account first.');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

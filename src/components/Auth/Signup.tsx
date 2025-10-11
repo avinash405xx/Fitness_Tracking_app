@@ -20,7 +20,14 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
     setError('');
 
     try {
-      await signUp(email, password, name);
+      const result = await signUp(email, password, name);
+
+      if (result.user && !result.user.confirmed_at) {
+        setError('Please check your email to confirm your account before logging in.');
+        setLoading(false);
+        return;
+      }
+
       if (onSignupSuccess) {
         onSignupSuccess();
       }
