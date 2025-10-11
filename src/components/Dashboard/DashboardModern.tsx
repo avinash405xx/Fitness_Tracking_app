@@ -136,7 +136,8 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
 
   const totalCalories = dailyStats?.calories_consumed || 0;
   const calorieGoal = dailyStats?.calories_goal || 2000;
-  const remainingCalories = calorieGoal - totalCalories;
+  const caloriesBurned = dailyStats?.calories_burned || 0;
+  const remainingCalories = (calorieGoal + caloriesBurned) - totalCalories;
 
   const totalProtein = meals.reduce((sum, meal) => sum + meal.protein, 0);
   const totalCarbs = meals.reduce((sum, meal) => sum + meal.carbs, 0);
@@ -239,6 +240,22 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                       {Math.abs(remainingCalories)}
                     </p>
                     <p className="text-gray-400 text-xs sm:text-sm">kcal</p>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-lime-400/20">
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div>
+                        <p className="text-xs text-gray-400">Goal</p>
+                        <p className="text-sm font-semibold text-white">{calorieGoal}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400">Consumed</p>
+                        <p className="text-sm font-semibold text-white">{totalCalories}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400">Burned</p>
+                        <p className="text-sm font-semibold text-white">{caloriesBurned}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
