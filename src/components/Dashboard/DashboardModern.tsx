@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Droplet, Flame, Weight, Activity, ChevronDown, Bell, Search, Plus, Edit2, Trash2, Target, ChevronRight, Coffee, Sun, Moon } from 'lucide-react';
+import { Droplet, Flame, Weight, Activity, ChevronDown, Bell, Search, Plus, Edit2, Trash2, Target, ChevronRight, Coffee, Sun, Moon, Utensils } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import CircularProgress from '../shared/CircularProgress';
 import FitnessVideo from '../shared/FitnessVideo';
@@ -399,13 +399,29 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                       <div className="ml-4 space-y-2">
                         {typeMeals.map((meal) => (
                           <div key={meal.id} className="flex items-center space-x-3 bg-gray-50 rounded-lg p-2">
-                            {meal.image_url && (
-                              <img
-                                src={meal.image_url}
-                                alt={meal.name}
-                                className="w-12 h-12 rounded-lg object-cover"
-                              />
-                            )}
+                            <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                              {meal.image_url ? (
+                                <img
+                                  src={meal.image_url}
+                                  alt={meal.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.parentElement!.innerHTML = `
+                                      <div class="w-full h-full bg-lime-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-lime-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                      </div>
+                                    `;
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-lime-100 rounded-lg flex items-center justify-center">
+                                  <Utensils className="w-6 h-6 text-lime-600" />
+                                </div>
+                              )}
+                            </div>
                             <div className="flex-1">
                               <p className="text-sm font-medium text-gray-900">{meal.name}</p>
                               <p className="text-xs text-gray-500">{meal.calories} kcal</p>
