@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { updateTodayLogProgress } from './dailyGoalLogService';
 
 async function fetchFoodImage(foodName: string): Promise<string | null> {
   try {
@@ -234,8 +235,28 @@ export async function getTodayStats(userId: string): Promise<DailyStat> {
   return getStatsByDate(userId, today);
 }
 
+async function updateCalorieIntakeGoal(userId: string, totalCalories: number): Promise<void> {
+  try {
+    const { data: calorieGoal } = await supabase
+      .from('goals')
+      .select('id, target_value')
+      .eq('user_id', userId)
+      .eq('category', 'nutrition')
+      .ilike('name', '%calorie%')
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (calorieGoal) {
+      await updateTodayLogProgress(userId, calorieGoal.id, totalCalories, parseFloat(calorieGoal.target_value));
+    }
+  } catch (error) {
+    console.error('Error updating calorie intake goal:', error);
+  }
+}
+
 export async function updateDailyCalories(userId: string, date?: string): Promise<void> {
   const targetDate = date || new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
   const meals = await getMealsByDate(userId, targetDate);
   const totalCalories = meals.reduce((sum, meal) => sum + (meal.calories || 0), 0);
 
@@ -252,6 +273,10 @@ export async function updateDailyCalories(userId: string, date?: string): Promis
 
   if (error) {
     console.error('Error updating daily calories:', error);
+  }
+
+  if (targetDate === today) {
+    await updateCalorieIntakeGoal(userId, totalCalories);
   }
 }
 
