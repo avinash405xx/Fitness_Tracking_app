@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Droplet, Plus, Minus } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDataRefresh } from '../../contexts/DataRefreshContext';
 import { getTodaysWaterLogs, addWaterLog, deleteWaterLog, getWaterProgress, type WaterLog } from '../../lib/waterService';
 
 interface WaterTrackerProps {
@@ -23,6 +24,7 @@ const hydrationTips = [
 
 export default function WaterTracker({ onBack }: WaterTrackerProps) {
   const { user } = useAuth();
+  const { triggerRefresh } = useDataRefresh();
   const [waterLogs, setWaterLogs] = useState<WaterLog[]>([]);
   const [totalIntake, setTotalIntake] = useState(0);
   const [goal, setGoal] = useState(2300);
@@ -62,9 +64,9 @@ export default function WaterTracker({ onBack }: WaterTrackerProps) {
     if (!user) return;
 
     try {
-      const newLog = await addWaterLog(user.id, amount);
-      setWaterLogs((prev) => [newLog, ...prev]);
-      setTotalIntake((prev) => prev + amount);
+      await addWaterLog(user.id, amount);
+      await loadData();
+      triggerRefresh();
     } catch (error) {
       console.error('Error adding water:', error);
     }
@@ -75,8 +77,8 @@ export default function WaterTracker({ onBack }: WaterTrackerProps) {
 
     try {
       await deleteWaterLog(id, user.id);
-      setWaterLogs((prev) => prev.filter((log) => log.id !== id));
-      setTotalIntake((prev) => prev - amount);
+      await loadData();
+      triggerRefresh();
     } catch (error) {
       console.error('Error deleting water log:', error);
     }

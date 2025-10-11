@@ -16,6 +16,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDataRefresh } from '../../contexts/DataRefreshContext';
 import {
   getGoals,
   createGoal,
@@ -42,6 +43,7 @@ interface GoalFormData {
 
 export default function GoalsManager() {
   const { user } = useAuth();
+  const { refreshKey } = useDataRefresh();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -63,7 +65,7 @@ export default function GoalsManager() {
 
   useEffect(() => {
     loadGoals();
-  }, [user]);
+  }, [user, refreshKey]);
 
   const loadGoals = async () => {
     if (!user) return;
