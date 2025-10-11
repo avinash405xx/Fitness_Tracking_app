@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { User, Mail, Lock, Chrome } from 'lucide-react';
+import { signUp, signInWithGoogle } from '../../lib/auth';
 
 interface SignupProps {
   onSwitchToLogin: () => void;
@@ -11,25 +12,36 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    setLoading(false);
-    if (onSignupSuccess) {
-      onSignupSuccess();
+    try {
+      await signUp(email, password, name);
+      if (onSignupSuccess) {
+        onSignupSuccess();
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign up. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleSignup = async () => {
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setLoading(false);
-    if (onSignupSuccess) {
-      onSignupSuccess();
+    setError('');
+    try {
+      await signInWithGoogle();
+      if (onSignupSuccess) {
+        onSignupSuccess();
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign up with Google.');
+      setLoading(false);
     }
   };
 
@@ -68,6 +80,12 @@ export default function Signup({ onSwitchToLogin, onSignupSuccess }: SignupProps
 
 
             <form onSubmit={handleSignup} className="space-y-5">
+              {error && (
+                <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-3 text-red-100 text-sm">
+                  {error}
+                </div>
+              )}
+
               <div>
                 <label className="block text-gray-300 text-sm mb-2">Name</label>
                 <div className="relative">
