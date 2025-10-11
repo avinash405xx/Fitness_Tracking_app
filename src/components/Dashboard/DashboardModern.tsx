@@ -243,28 +243,28 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   {nutritionData.map((item) => (
-                    <div key={item.label} className="flex flex-col items-center">
-                      <CircularProgress value={item.value} size={50} color={item.color} />
+                    <div key={item.label} className="flex flex-col items-center bg-white/5 rounded-xl p-3 sm:p-4">
+                      <CircularProgress value={item.value} size={60} color={item.color} />
                       <p className="text-gray-400 text-xs mt-2">{item.label}</p>
-                      <p className="text-white text-xs font-semibold">{item.amount}g</p>
+                      <p className="text-white text-sm font-semibold">{item.amount}g</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div>
                 <h4 className="text-white font-semibold mb-4">My Daily Target</h4>
 
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   <div className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                     <div className="flex items-center space-x-2 mb-2">
-                      <Droplet className="w-5 h-5 text-blue-400" />
-                      <span className="text-gray-400 text-sm">Water</span>
+                      <Droplet className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+                      <span className="text-gray-400 text-xs sm:text-sm">Water</span>
                     </div>
-                    <p className="text-white text-sm mb-1">Total Goal</p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-white text-xs sm:text-sm mb-1">Total Goal</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                       {waterIntake}/{waterGoal}ml
                     </p>
                     <div className="mt-2 w-full bg-white/10 rounded-full h-1.5">
@@ -275,33 +275,33 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                     </div>
                   </div>
 
-                  <div className="bg-white/5 rounded-2xl p-4">
+                  <div className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                     <div className="flex items-center space-x-2 mb-2">
-                      <Flame className="w-5 h-5 text-orange-400" />
-                      <span className="text-gray-400 text-sm">Calories</span>
+                      <Flame className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
+                      <span className="text-gray-400 text-xs sm:text-sm">Calories</span>
                     </div>
-                    <p className="text-white text-sm mb-1">Consumed</p>
-                    <p className="text-2xl font-bold text-white">{totalCalories}kCal</p>
+                    <p className="text-white text-xs sm:text-sm mb-1">Consumed</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{totalCalories}kCal</p>
                   </div>
 
-                  <div className="bg-white/5 rounded-2xl p-4">
+                  <div className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                     <div className="flex items-center space-x-2 mb-2">
-                      <Weight className="w-5 h-5 text-orange-400" />
-                      <span className="text-gray-400 text-sm">Weight</span>
+                      <Weight className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                      <span className="text-gray-400 text-xs sm:text-sm">Weight</span>
                     </div>
-                    <p className="text-white text-sm mb-1">My Weight</p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-white text-xs sm:text-sm mb-1">My Weight</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                       {profile?.weight ? `${profile.weight}kg` : '--'}
                     </p>
                   </div>
 
-                  <div className="bg-white/5 rounded-2xl p-4">
+                  <div className="bg-white/5 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                     <div className="flex items-center space-x-2 mb-2">
-                      <Activity className="w-5 h-5 text-red-400" />
-                      <span className="text-gray-400 text-sm">Steps</span>
+                      <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
+                      <span className="text-gray-400 text-xs sm:text-sm">Steps</span>
                     </div>
-                    <p className="text-white text-sm mb-1">Today</p>
-                    <p className="text-2xl font-bold text-white">
+                    <p className="text-white text-xs sm:text-sm mb-1">Today</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                       {dailyStats?.steps || 0}
                     </p>
                   </div>
