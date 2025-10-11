@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Droplet, Flame, Weight, Activity, ChevronDown, Bell, Search, Plus, Edit2, Trash2, Target, ChevronRight } from 'lucide-react';
+import { Droplet, Flame, Weight, Activity, ChevronDown, Bell, Search, Plus, Edit2, Trash2, Target, ChevronRight, Coffee, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import CircularProgress from '../shared/CircularProgress';
 import FitnessVideo from '../shared/FitnessVideo';
@@ -369,12 +369,23 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
               {(['breakfast', 'lunch', 'dinner'] as const).map((mealType) => {
                 const typeMeals = getMealsByType(mealType);
                 const typeCalories = getTotalCaloriesByType(mealType);
+                const MealIcon = mealType === 'breakfast' ? Coffee : mealType === 'lunch' ? Sun : Moon;
 
                 return (
                   <div key={mealType} className="border-b border-gray-100 pb-3 sm:pb-4">
                     <div className="flex items-center justify-between mb-2 sm:mb-3">
                       <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${typeMeals.length > 0 ? 'bg-gray-900' : 'bg-gray-300'}`} />
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          mealType === 'breakfast' ? 'bg-amber-100' :
+                          mealType === 'lunch' ? 'bg-orange-100' :
+                          'bg-indigo-100'
+                        }`}>
+                          <MealIcon className={`w-4 h-4 ${
+                            mealType === 'breakfast' ? 'text-amber-600' :
+                            mealType === 'lunch' ? 'text-orange-600' :
+                            'text-indigo-600'
+                          }`} />
+                        </div>
                         <span className="font-semibold text-gray-900 capitalize">{mealType}</span>
                       </div>
                       <button
@@ -387,7 +398,14 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                     {typeMeals.length > 0 && (
                       <div className="ml-4 space-y-2">
                         {typeMeals.map((meal) => (
-                          <div key={meal.id} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                          <div key={meal.id} className="flex items-center space-x-3 bg-gray-50 rounded-lg p-2">
+                            {meal.image_url && (
+                              <img
+                                src={meal.image_url}
+                                alt={meal.name}
+                                className="w-12 h-12 rounded-lg object-cover"
+                              />
+                            )}
                             <div className="flex-1">
                               <p className="text-sm font-medium text-gray-900">{meal.name}</p>
                               <p className="text-xs text-gray-500">{meal.calories} kcal</p>

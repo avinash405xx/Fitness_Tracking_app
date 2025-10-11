@@ -1,5 +1,36 @@
 import { supabase } from './supabase';
 
+const PEXELS_API_KEY = 'fZYrBIUqOYfe7BKK3y9z7DQqLyOl6FYZ5YlNWtHOdz9x7sKPQKYd1v82';
+
+async function fetchFoodImage(foodName: string): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(foodName + ' food')}&per_page=1`,
+      {
+        headers: {
+          Authorization: PEXELS_API_KEY,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error('Pexels API error:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (data.photos && data.photos.length > 0) {
+      return data.photos[0].src.medium;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error fetching food image:', error);
+    return null;
+  }
+}
+
 export interface Meal {
   id: string;
   user_id: string;
@@ -10,6 +41,7 @@ export interface Meal {
   carbs: number;
   fats: number;
   fiber: number;
+  image_url?: string;
   meal_date: string;
   created_at: string;
 }
@@ -67,6 +99,8 @@ export async function addMeal(
 ): Promise<Meal> {
   const mealDate = mealData.meal_date || new Date().toISOString().split('T')[0];
 
+  const imageUrl = await fetchFoodImage(mealData.name);
+
   const { data, error } = await supabase
     .from('meals')
     .insert({
@@ -78,6 +112,7 @@ export async function addMeal(
       carbs: mealData.carbs || 0,
       fats: mealData.fats || 0,
       fiber: mealData.fiber || 0,
+      image_url: imageUrl,
       meal_date: mealDate,
     })
     .select()
