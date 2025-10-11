@@ -7,9 +7,10 @@ import WorkoutsList from '../Workouts/WorkoutsList';
 import GoalsManager from '../Goals/GoalsManager';
 import Profile from '../Profile/Profile';
 import WaterTracker from '../Tracker/WaterTracker';
+import SleepTracker from '../Tracker/SleepTracker';
 import BottomNav from '../Navigation/BottomNav';
 
-type Screen = 'dashboard' | 'workout-detail' | 'workout-timer' | 'workouts' | 'goals' | 'profile' | 'water-tracker' | 'daily-exercise';
+type Screen = 'dashboard' | 'workout-detail' | 'workout-timer' | 'workouts' | 'goals' | 'profile' | 'water-tracker' | 'sleep-tracker' | 'daily-exercise';
 type NavItem = 'home' | 'saved' | 'browse' | 'profile';
 
 interface AppModernProps {
@@ -47,6 +48,7 @@ export default function AppModern({ onLogout }: AppModernProps) {
   const handleNavigate = (page: string) => {
     const pageMap: { [key: string]: Screen } = {
       'water tracker': 'water-tracker',
+      'sleep tracker': 'sleep-tracker',
       'daily exercise': 'daily-exercise',
     };
 
@@ -64,6 +66,8 @@ export default function AppModern({ onLogout }: AppModernProps) {
         return <DashboardModern onNavigate={handleNavigate} />;
       case 'water-tracker':
         return <WaterTracker onBack={() => setCurrentScreen('dashboard')} />;
+      case 'sleep-tracker':
+        return <SleepTracker onBack={() => setCurrentScreen('dashboard')} />;
       case 'workouts':
         return <WorkoutsList onWorkoutClick={() => setCurrentScreen('workout-detail')} />;
       case 'goals':
@@ -86,7 +90,7 @@ export default function AppModern({ onLogout }: AppModernProps) {
     }
   };
 
-  const showBottomNav = !['workout-detail', 'workout-timer', 'water-tracker'].includes(currentScreen);
+  const showBottomNav = !['workout-detail', 'workout-timer', 'water-tracker', 'sleep-tracker'].includes(currentScreen);
 
   return (
     <div className="relative min-h-screen bg-gray-900">

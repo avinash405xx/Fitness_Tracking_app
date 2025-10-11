@@ -40,6 +40,12 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
       videoUrl: 'https://videos.pexels.com/video-files/4753989/4753989-uhd_2560_1440_30fps.mp4',
       color: 'from-white to-gray-100',
     },
+    {
+      title: 'Sleep Tracker',
+      subtitle: 'Quality sleep for recovery',
+      videoUrl: 'https://videos.pexels.com/video-files/5357416/5357416-uhd_2560_1440_30fps.mp4',
+      color: 'from-gray-800 to-gray-900',
+    },
   ];
 
   useEffect(() => {
