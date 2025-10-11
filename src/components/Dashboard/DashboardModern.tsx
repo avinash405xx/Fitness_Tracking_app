@@ -153,6 +153,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
     { label: 'Protein', value: proteinPercent, color: 'bg-lime-400', amount: totalProtein },
     { label: 'Carbs', value: carbsPercent, color: 'bg-yellow-400', amount: totalCarbs },
     { label: 'Fats', value: fatsPercent, color: 'bg-red-400', amount: totalFats },
+    { label: 'Fiber', value: totalFiber > 0 ? Math.min(Math.round((totalFiber / 30) * 100), 100) : 0, color: 'bg-green-500', amount: totalFiber },
   ];
 
   const calorieAnalysis = [
@@ -242,10 +243,10 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-around">
+                <div className="grid grid-cols-2 gap-4">
                   {nutritionData.map((item) => (
                     <div key={item.label} className="flex flex-col items-center">
-                      <CircularProgress value={item.value} size={60} color={item.color} />
+                      <CircularProgress value={item.value} size={50} color={item.color} />
                       <p className="text-gray-400 text-xs mt-2">{item.label}</p>
                       <p className="text-white text-xs font-semibold">{item.amount}g</p>
                     </div>

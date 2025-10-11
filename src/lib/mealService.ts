@@ -31,14 +31,12 @@ export interface DailyStat {
   updated_at: string;
 }
 
-export async function getTodaysMeals(userId: string): Promise<Meal[]> {
-  const today = new Date().toISOString().split('T')[0];
-
+export async function getMealsByDate(userId: string, date: string): Promise<Meal[]> {
   const { data, error } = await supabase
     .from('meals')
     .select('*')
     .eq('user_id', userId)
-    .eq('meal_date', today)
+    .eq('meal_date', date)
     .order('created_at', { ascending: true });
 
   if (error) {
@@ -47,6 +45,11 @@ export async function getTodaysMeals(userId: string): Promise<Meal[]> {
   }
 
   return data || [];
+}
+
+export async function getTodaysMeals(userId: string): Promise<Meal[]> {
+  const today = new Date().toISOString().split('T')[0];
+  return getMealsByDate(userId, today);
 }
 
 export async function addMeal(
@@ -59,9 +62,10 @@ export async function addMeal(
     carbs?: number;
     fats?: number;
     fiber?: number;
+    meal_date?: string;
   }
 ): Promise<Meal> {
-  const today = new Date().toISOString().split('T')[0];
+  const mealDate = mealData.meal_date || new Date().toISOString().split('T')[0];
 
   const { data, error } = await supabase
     .from('meals')
@@ -74,7 +78,7 @@ export async function addMeal(
       carbs: mealData.carbs || 0,
       fats: mealData.fats || 0,
       fiber: mealData.fiber || 0,
-      meal_date: today,
+      meal_date: mealDate,
     })
     .select()
     .single();
@@ -84,7 +88,7 @@ export async function addMeal(
     throw error;
   }
 
-  await updateDailyCalories(userId);
+  await updateDailyCalories(userId, mealDate);
 
   return data;
 }
@@ -114,12 +118,34 @@ export async function updateMeal(
     throw error;
   }
 
-  await updateDailyCalories(userId);
+  const meal = await supabase
+    .from('meals')
+    .select('meal_date')
+    .eq('id', mealId)
+    .single();
+
+  if (meal.data) {
+    await updateDailyCalories(userId, meal.data.meal_date);
+  }
 
   return data;
 }
 
-export async function deleteMeal(mealId: string, userId: string): Promise<void> {
+export async function deleteMeal(mealId: string, userId: string, mealDate?: string): Promise<void> {
+  let date = mealDate;
+
+  if (!date) {
+    const meal = await supabase
+      .from('meals')
+      .select('meal_date')
+      .eq('id', mealId)
+      .single();
+
+    if (meal.data) {
+      date = meal.data.meal_date;
+    }
+  }
+
   const { error } = await supabase
     .from('meals')
     .delete()
@@ -131,17 +157,17 @@ export async function deleteMeal(mealId: string, userId: string): Promise<void> 
     throw error;
   }
 
-  await updateDailyCalories(userId);
+  if (date) {
+    await updateDailyCalories(userId, date);
+  }
 }
 
-export async function getTodayStats(userId: string): Promise<DailyStat> {
-  const today = new Date().toISOString().split('T')[0];
-
+export async function getStatsByDate(userId: string, date: string): Promise<DailyStat> {
   let { data, error } = await supabase
     .from('daily_stats')
     .select('*')
     .eq('user_id', userId)
-    .eq('stat_date', today)
+    .eq('stat_date', date)
     .maybeSingle();
 
   if (error) {
@@ -154,7 +180,7 @@ export async function getTodayStats(userId: string): Promise<DailyStat> {
       .from('daily_stats')
       .insert({
         user_id: userId,
-        stat_date: today,
+        stat_date: date,
       })
       .select()
       .single();
@@ -170,17 +196,21 @@ export async function getTodayStats(userId: string): Promise<DailyStat> {
   return data;
 }
 
-export async function updateDailyCalories(userId: string): Promise<void> {
-  const meals = await getTodaysMeals(userId);
-  const totalCalories = meals.reduce((sum, meal) => sum + (meal.calories || 0), 0);
-
+export async function getTodayStats(userId: string): Promise<DailyStat> {
   const today = new Date().toISOString().split('T')[0];
+  return getStatsByDate(userId, today);
+}
+
+export async function updateDailyCalories(userId: string, date?: string): Promise<void> {
+  const targetDate = date || new Date().toISOString().split('T')[0];
+  const meals = await getMealsByDate(userId, targetDate);
+  const totalCalories = meals.reduce((sum, meal) => sum + (meal.calories || 0), 0);
 
   const { error } = await supabase
     .from('daily_stats')
     .upsert({
       user_id: userId,
-      stat_date: today,
+      stat_date: targetDate,
       calories_consumed: totalCalories,
       updated_at: new Date().toISOString(),
     }, {
@@ -203,15 +233,16 @@ export async function updateDailyStats(
     calories_goal?: number;
     water_goal_ml?: number;
     steps_goal?: number;
+    stat_date?: string;
   }
 ): Promise<DailyStat> {
-  const today = new Date().toISOString().split('T')[0];
+  const targetDate = stats.stat_date || new Date().toISOString().split('T')[0];
 
   const { data, error } = await supabase
     .from('daily_stats')
     .upsert({
       user_id: userId,
-      stat_date: today,
+      stat_date: targetDate,
       ...stats,
       updated_at: new Date().toISOString(),
     }, {
@@ -230,15 +261,16 @@ export async function updateDailyStats(
 
 export async function getMealsByType(
   userId: string,
-  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack',
+  date?: string
 ): Promise<Meal[]> {
-  const today = new Date().toISOString().split('T')[0];
+  const targetDate = date || new Date().toISOString().split('T')[0];
 
   const { data, error } = await supabase
     .from('meals')
     .select('*')
     .eq('user_id', userId)
-    .eq('meal_date', today)
+    .eq('meal_date', targetDate)
     .eq('meal_type', mealType)
     .order('created_at', { ascending: true });
 
