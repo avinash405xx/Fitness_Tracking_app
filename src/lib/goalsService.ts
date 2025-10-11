@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { addWeightEntry } from './weightHistoryService';
+import { getTodayLog, updateTodayLogProgress } from './dailyGoalLogService';
 
 export interface Goal {
   id: string;
@@ -65,7 +66,22 @@ export async function getGoals(userId: string): Promise<Goal[]> {
     throw error;
   }
 
-  return data || [];
+  const goals = data || [];
+
+  for (const goal of goals) {
+    if (goal.category === 'fitness' || goal.category === 'nutrition') {
+      const todayLog = await getTodayLog(userId, goal.id);
+
+      if (todayLog) {
+        goal.current_value = todayLog.current_value;
+      } else {
+        goal.current_value = 0;
+        await updateTodayLogProgress(userId, goal.id, 0, goal.target_value);
+      }
+    }
+  }
+
+  return goals;
 }
 
 export async function getGoalById(goalId: string, userId: string): Promise<Goal | null> {
@@ -209,13 +225,21 @@ export async function updateGoalProgress(
     if (currentValue === goal.target_value && goal.status !== 'completed') {
       updates.status = 'completed';
     }
+
+    return updateGoal(goalId, userId, updates);
+  } else if (goal.category === 'fitness' || goal.category === 'nutrition') {
+    await updateTodayLogProgress(userId, goalId, currentValue, goal.target_value);
+
+    goal.current_value = currentValue;
+
+    return goal;
   } else {
     if (currentValue >= goal.target_value && goal.status !== 'completed') {
       updates.status = 'completed';
     }
-  }
 
-  return updateGoal(goalId, userId, updates);
+    return updateGoal(goalId, userId, updates);
+  }
 }
 
 export async function deleteGoal(goalId: string, userId: string): Promise<void> {

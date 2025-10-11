@@ -3,6 +3,7 @@ import { Droplet, Flame, Weight, Activity, ChevronDown, Bell, Search, Plus, Edit
 import { useState, useEffect } from 'react';
 import CircularProgress from '../shared/CircularProgress';
 import FitnessVideo from '../shared/FitnessVideo';
+import Avatar from '../shared/Avatar';
 import { useAuth } from '../../contexts/AuthContext';
 import { getTodaysMeals, getTodayStats, addMeal, deleteMeal, updateMeal, type Meal } from '../../lib/mealService';
 import { getWaterProgress } from '../../lib/waterService';
@@ -194,11 +195,11 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
         <div className="lg:col-span-7 space-y-4 sm:space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-lime-400 flex items-center justify-center">
-                <span className="text-xl font-bold text-gray-900">
-                  {profile?.name?.charAt(0).toUpperCase() || 'U'}
-                </span>
-              </div>
+              <Avatar
+                src={profile?.avatar_url}
+                alt={profile?.name || 'User'}
+                size="md"
+              />
               <div>
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900">{profile?.name || 'User'}</h2>
               </div>
