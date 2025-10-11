@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { Home, Dumbbell, Apple, Target, TrendingUp, Award, User, LogOut } from 'lucide-react';
+import { Home, Dumbbell, Apple, Target, TrendingUp, Award, LogOut } from 'lucide-react';
 import Overview from './Overview';
 import Workouts from '../Workouts/Workouts';
 import Meals from '../Meals/Meals';
 import Goals from '../Goals/Goals';
 import Progress from '../Progress/Progress';
 import QuickLogButton from '../QuickLog/QuickLogButton';
+import Avatar from '../shared/Avatar';
+import { useAuth } from '../../contexts/AuthContext';
 
 type View = 'overview' | 'workouts' | 'meals' | 'goals' | 'progress';
 
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<View>('overview');
+  const { profile } = useAuth();
 
   const handleLogout = () => {
     console.log('Logout clicked');
@@ -72,8 +75,8 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center space-x-3">
-              <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                <User className="w-5 h-5 text-gray-600" />
+              <button className="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+                <Avatar src={profile?.avatar_url} name={profile?.name} size="md" />
               </button>
               <button
                 onClick={handleLogout}

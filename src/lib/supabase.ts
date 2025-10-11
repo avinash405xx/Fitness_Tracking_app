@@ -28,6 +28,10 @@ export interface Profile {
   name: string;
   email: string;
   avatar_url?: string;
+  age?: number;
+  gender?: string;
+  height?: number;
+  weight?: number;
   current_streak: number;
   longest_streak: number;
   total_xp: number;
