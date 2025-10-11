@@ -8,6 +8,7 @@ export interface Goal {
   category: string;
   target_value: number;
   current_value: number;
+  start_value?: number;
   unit: string;
   icon?: string;
   color?: string;
@@ -100,6 +101,8 @@ export async function getGoalsByStatus(userId: string, status: string): Promise<
 }
 
 export async function createGoal(userId: string, goalData: CreateGoalInput): Promise<Goal> {
+  const currentValue = goalData.current_value || 0;
+
   const { data, error } = await supabase
     .from('goals')
     .insert({
@@ -108,7 +111,8 @@ export async function createGoal(userId: string, goalData: CreateGoalInput): Pro
       description: goalData.description || '',
       category: goalData.category,
       target_value: goalData.target_value,
-      current_value: goalData.current_value || 0,
+      current_value: currentValue,
+      start_value: currentValue,
       unit: goalData.unit,
       icon: goalData.icon || 'target',
       color: goalData.color || 'from-blue-600 to-green-600',
@@ -185,8 +189,14 @@ export async function updateGoalProgress(
     current_value: currentValue,
   };
 
-  if (currentValue >= goal.target_value && goal.status !== 'completed') {
-    updates.status = 'completed';
+  if (goal.category === 'bodyweight') {
+    if (currentValue === goal.target_value && goal.status !== 'completed') {
+      updates.status = 'completed';
+    }
+  } else {
+    if (currentValue >= goal.target_value && goal.status !== 'completed') {
+      updates.status = 'completed';
+    }
   }
 
   return updateGoal(goalId, userId, updates);
@@ -205,8 +215,24 @@ export async function deleteGoal(goalId: string, userId: string): Promise<void> 
   }
 }
 
-export function calculateGoalProgress(currentValue: number, targetValue: number): number {
+export function calculateGoalProgress(
+  currentValue: number,
+  targetValue: number,
+  category?: string,
+  startValue?: number
+): number {
   if (targetValue === 0) return 0;
+
+  if (category === 'bodyweight' && startValue !== undefined) {
+    const totalDistance = Math.abs(targetValue - startValue);
+    if (totalDistance === 0) return currentValue === targetValue ? 100 : 0;
+
+    const currentDistance = Math.abs(currentValue - startValue);
+    const progress = (currentDistance / totalDistance) * 100;
+
+    return Math.min(progress, 100);
+  }
+
   return Math.min((currentValue / targetValue) * 100, 100);
 }
 

@@ -262,7 +262,12 @@ export default function GoalsManager() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {activeGoals.map((goal) => {
                     const Icon = getIcon(goal.icon || 'target');
-                    const percentage = calculateGoalProgress(goal.current_value, goal.target_value);
+                    const percentage = calculateGoalProgress(
+                      goal.current_value,
+                      goal.target_value,
+                      goal.category,
+                      goal.start_value
+                    );
                     const remaining = goal.target_value - goal.current_value;
 
                     return (

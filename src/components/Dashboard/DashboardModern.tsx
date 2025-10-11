@@ -453,7 +453,12 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
 
               <div className="space-y-3">
                 {goals.map((goal) => {
-                  const progress = calculateGoalProgress(goal.current_value, goal.target_value);
+                  const progress = calculateGoalProgress(
+                    goal.current_value,
+                    goal.target_value,
+                    goal.category,
+                    goal.start_value
+                  );
                   const remaining = goal.target_value - goal.current_value;
 
                   return (
