@@ -6,11 +6,11 @@ import WorkoutTimer from '../Workout/WorkoutTimer';
 import WorkoutsList from '../Workouts/WorkoutsList';
 import Goals from '../Goals/Goals';
 import Profile from '../Profile/Profile';
-import DrinkingTracker from '../Tracker/DrinkingTracker';
+import WaterTracker from '../Tracker/WaterTracker';
 import SleepTracker from '../Tracker/SleepTracker';
 import BottomNav from '../Navigation/BottomNav';
 
-type Screen = 'dashboard' | 'workout-detail' | 'workout-timer' | 'workouts' | 'goals' | 'profile' | 'drinking-tracker' | 'sleep-tracker' | 'daily-exercise';
+type Screen = 'dashboard' | 'workout-detail' | 'workout-timer' | 'workouts' | 'goals' | 'profile' | 'water-tracker' | 'sleep-tracker' | 'daily-exercise';
 type NavItem = 'home' | 'saved' | 'browse' | 'profile';
 
 interface AppModernProps {
@@ -47,7 +47,7 @@ export default function AppModern({ onLogout }: AppModernProps) {
 
   const handleNavigate = (page: string) => {
     const pageMap: { [key: string]: Screen } = {
-      'drinking tracker': 'drinking-tracker',
+      'water tracker': 'water-tracker',
       'daily exercise': 'daily-exercise',
       'sleep tracker': 'sleep-tracker',
     };
@@ -64,8 +64,8 @@ export default function AppModern({ onLogout }: AppModernProps) {
     switch (currentScreen) {
       case 'dashboard':
         return <DashboardModern onNavigate={handleNavigate} />;
-      case 'drinking-tracker':
-        return <DrinkingTracker onBack={() => setCurrentScreen('dashboard')} />;
+      case 'water-tracker':
+        return <WaterTracker onBack={() => setCurrentScreen('dashboard')} />;
       case 'sleep-tracker':
         return <SleepTracker onBack={() => setCurrentScreen('dashboard')} />;
       case 'workouts':
@@ -90,7 +90,7 @@ export default function AppModern({ onLogout }: AppModernProps) {
     }
   };
 
-  const showBottomNav = !['workout-detail', 'workout-timer', 'drinking-tracker', 'sleep-tracker'].includes(currentScreen);
+  const showBottomNav = !['workout-detail', 'workout-timer', 'water-tracker', 'sleep-tracker'].includes(currentScreen);
 
   return (
     <div className="relative min-h-screen bg-gray-900">

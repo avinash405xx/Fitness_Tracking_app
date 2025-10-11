@@ -4,16 +4,35 @@ import { ArrowLeft, Droplet, Plus, Minus } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getTodaysWaterLogs, addWaterLog, deleteWaterLog, getWaterProgress, type WaterLog } from '../../lib/waterService';
 
-interface DrinkingTrackerProps {
+interface WaterTrackerProps {
   onBack: () => void;
 }
 
-export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
+const hydrationTips = [
+  "Drink water consistently throughout the day. Your body needs regular hydration to function optimally!",
+  "Start your day with a glass of water to kickstart your metabolism and rehydrate after sleep.",
+  "Drink water before meals to aid digestion and help control portion sizes.",
+  "Keep a reusable water bottle with you to make hydration convenient throughout the day.",
+  "If plain water feels boring, try adding lemon, cucumber, or mint for natural flavor.",
+  "Your urine color is a good indicator of hydration - aim for pale yellow.",
+  "Don't wait until you're thirsty to drink water. Thirst is a sign you're already dehydrated.",
+  "Increase water intake during exercise, hot weather, or when you're sick.",
+  "Eat water-rich foods like cucumbers, watermelon, and oranges to supplement hydration.",
+  "Set hourly reminders to drink water if you often forget throughout the day.",
+];
+
+export default function WaterTracker({ onBack }: WaterTrackerProps) {
   const { user } = useAuth();
   const [waterLogs, setWaterLogs] = useState<WaterLog[]>([]);
   const [totalIntake, setTotalIntake] = useState(0);
   const [goal, setGoal] = useState(2300);
   const [loading, setLoading] = useState(true);
+  const [currentTip, setCurrentTip] = useState('');
+
+  useEffect(() => {
+    const randomTip = hydrationTips[Math.floor(Math.random() * hydrationTips.length)];
+    setCurrentTip(randomTip);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -90,7 +109,7 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
           <button onClick={onBack} className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-shadow">
             <ArrowLeft className="w-5 h-5 text-gray-700" />
           </button>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Drinking Tracker</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Water Tracker</h1>
           <div className="w-10" />
         </div>
 
@@ -228,8 +247,7 @@ export default function DrinkingTracker({ onBack }: DrinkingTrackerProps) {
         >
           <h4 className="font-bold mb-2 text-lg">Hydration Tip</h4>
           <p className="text-sm text-cyan-50">
-            Drink water consistently throughout the day. Your body needs regular hydration to function optimally!
-            Try to drink a glass of water every 2 hours.
+            {currentTip}
           </p>
         </motion.div>
       </div>

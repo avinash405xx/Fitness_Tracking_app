@@ -26,7 +26,7 @@ export default function DashboardModern({ onNavigate }: DashboardModernProps) {
 
   const activities = [
     {
-      title: 'Drinking Tracker',
+      title: 'Water Tracker',
       subtitle: 'Stay hydrated, nature\'s best nutrient',
       videoUrl: 'https://videos.pexels.com/video-files/6985001/6985001-uhd_2560_1440_30fps.mp4',
       color: 'from-lime-400 to-lime-500',
