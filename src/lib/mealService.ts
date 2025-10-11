@@ -237,7 +237,7 @@ export async function getTodayStats(userId: string): Promise<DailyStat> {
 
 async function updateCalorieIntakeGoal(userId: string, totalCalories: number): Promise<void> {
   try {
-    const { data: calorieGoal } = await supabase
+    const { data: calorieGoal, error: goalError } = await supabase
       .from('goals')
       .select('id, target_value')
       .eq('user_id', userId)
@@ -246,8 +246,17 @@ async function updateCalorieIntakeGoal(userId: string, totalCalories: number): P
       .eq('status', 'active')
       .maybeSingle();
 
+    if (goalError) {
+      console.error('Error fetching calorie goal:', goalError);
+      return;
+    }
+
     if (calorieGoal) {
+      console.log('Updating calorie intake goal:', { goalId: calorieGoal.id, totalCalories, targetValue: calorieGoal.target_value });
       await updateTodayLogProgress(userId, calorieGoal.id, totalCalories, parseFloat(calorieGoal.target_value));
+      console.log('Calorie intake goal updated successfully');
+    } else {
+      console.log('No active calorie intake goal found');
     }
   } catch (error) {
     console.error('Error updating calorie intake goal:', error);
