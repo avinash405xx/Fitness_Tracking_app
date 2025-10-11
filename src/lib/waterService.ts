@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { getStatsByDate, getTodayStats, updateDailyStats } from './mealService';
+import { updateTodayLogProgress } from './dailyGoalLogService';
 
 export interface WaterLog {
   id: string;
@@ -93,14 +94,47 @@ export async function getTodayWaterIntake(userId: string): Promise<number> {
   return getWaterIntakeByDate(userId, today);
 }
 
+async function updateWaterGoal(userId: string, totalWater: number): Promise<void> {
+  try {
+    const { data: waterGoal, error: goalError } = await supabase
+      .from('goals')
+      .select('id, target_value')
+      .eq('user_id', userId)
+      .eq('category', 'nutrition')
+      .ilike('name', '%water%')
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (goalError) {
+      console.error('Error fetching water goal:', goalError);
+      return;
+    }
+
+    if (waterGoal) {
+      console.log('Updating water goal:', { goalId: waterGoal.id, totalWater, targetValue: waterGoal.target_value });
+      await updateTodayLogProgress(userId, waterGoal.id, totalWater, parseFloat(waterGoal.target_value));
+      console.log('Water goal updated successfully');
+    } else {
+      console.log('No active water goal found');
+    }
+  } catch (error) {
+    console.error('Error updating water goal:', error);
+  }
+}
+
 export async function updateTotalWaterIntake(userId: string, date?: string): Promise<void> {
   const targetDate = date || new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
   const totalWater = await getWaterIntakeByDate(userId, targetDate);
 
   await updateDailyStats(userId, {
     water_intake_ml: totalWater,
     stat_date: targetDate,
   });
+
+  if (targetDate === today) {
+    await updateWaterGoal(userId, totalWater);
+  }
 }
 
 export async function getWaterProgressByDate(userId: string, date: string): Promise<{ intake: number; goal: number; percentage: number }> {
